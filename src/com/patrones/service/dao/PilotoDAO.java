@@ -17,14 +17,13 @@ public class PilotoDAO {
                 p.id_piloto,
                 p.nombre,
                 p.apellido,
-                p.nacionalidad,
-                e.nombre AS nombre_equipo,
-                t.anio
+                e.nombre AS nombre_equipo
             FROM piloto p
             JOIN piloto_temporada pt ON p.id_piloto = pt.id_piloto
             JOIN equipo e ON pt.id_equipo = e.id_equipo
             JOIN temporada t ON pt.id_temporada = t.id_temporada
-            WHERE t.anio = ?;
+            WHERE t.anio = ?
+            ORDER BY p.id_piloto ASC;
         """;
 
         try (Connection conn = ConnectionBD.getConnection();
@@ -38,9 +37,7 @@ public class PilotoDAO {
                         rs.getInt("id_piloto"),
                         rs.getString("nombre"),
                         rs.getString("apellido"),
-                        rs.getString("nacionalidad"),
-                        rs.getString("nombre_equipo"),
-                        rs.getInt("anio")
+                        rs.getString("nombre_equipo")
                 );
                 pilotos.add(piloto);
             }
@@ -51,4 +48,51 @@ public class PilotoDAO {
 
         return pilotos;
     }
+
+    public Piloto obtenerPiloto(int idPiloto, int anio) {
+        Piloto piloto = null;
+
+        String sql = """
+        SELECT 
+            p.id_piloto,
+            p.nombre,
+            p.apellido,
+            p.nacionalidad,
+            p.numero,
+            e.nombre AS nombre_equipo,
+            t.anio
+        FROM piloto p
+        JOIN piloto_temporada pt ON p.id_piloto = pt.id_piloto
+        JOIN equipo e ON pt.id_equipo = e.id_equipo
+        JOIN temporada t ON pt.id_temporada = t.id_temporada
+        WHERE p.id_piloto = ?
+        AND t.anio = ?;
+    """;
+
+        try (Connection conn = ConnectionBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idPiloto);
+            stmt.setInt(2, anio);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                piloto = new Piloto(
+                        rs.getInt("id_piloto"),
+                        rs.getString("nombre"),
+                        rs.getString("apellido"),
+                        rs.getString("nacionalidad"),
+                        rs.getString("nombre_equipo"),
+                        rs.getInt("numero"),
+                        rs.getInt("anio")
+                );
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Ocurrio un error al obtener el piloto por ID: " + e.getMessage());
+        }
+
+        return piloto;
+    }
+
 }
