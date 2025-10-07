@@ -1,6 +1,8 @@
 package com.patrones.service;
 
+import com.patrones.entity.Equipo;
 import com.patrones.entity.Piloto;
+import com.patrones.service.dao.EquipoDAO;
 import com.patrones.service.dao.PilotoDAO;
 import com.patrones.utils.Consola;
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.List;
 public class TemporadaService {
 
     private PilotoDAO pilotoDAO = new PilotoDAO();
+    private EquipoDAO equipoDAO = new EquipoDAO();
 
     public void mostrarMenuTemporada(int anio) {
         boolean salir = false;
@@ -60,18 +63,48 @@ public class TemporadaService {
     }
 
     private void mostrarPilotos(int anio) {
-        System.out.println("LISTADO DE PILOTOS - TEMPORADA " + anio);
+        System.out.println("\nLISTADO DE PILOTOS - TEMPORADA " + anio);
         List<Piloto> pilotos = pilotoDAO.obtenerPilotosPorTemporada(anio);
 
         if (pilotos.isEmpty()) {
             System.out.println("No se encontraron pilotos.");
-        } else {
-            pilotos.forEach(System.out::println);
+            return;
+        }
+
+        pilotos.forEach(System.out::println);
+
+        while (true) {
+            int idSeleccionado = Consola.leerEntero("\nIngrese el Id del piloto para ver detalles o ingrese 0 para regresar: ");
+
+            if (idSeleccionado == 0) {
+                break;
+            }
+
+            Piloto pilotoSeleccionado = pilotoDAO.obtenerPiloto(idSeleccionado, anio);
+            if (pilotoSeleccionado != null) {
+                System.out.println("\n--- DETALLES DEL PILOTO ---");
+                System.out.println("ID: " + pilotoSeleccionado.getId());
+                System.out.println("Nombre: " + pilotoSeleccionado.getNombre() + " " + pilotoSeleccionado.getApellido());
+                System.out.println("Equipo: " + pilotoSeleccionado.getEquipo());
+                System.out.println("Número: " + pilotoSeleccionado.getNumero());
+                System.out.println("Nacionalidad: " + pilotoSeleccionado.getNacionalidad());
+                System.out.println("Año: " + pilotoSeleccionado.getAnio());
+            } else {
+                System.out.println("No se encontró un piloto con ese Id. Ingrese un Id válido por favor.");
+            }
         }
     }
 
     private void mostrarEquipos(int anio) {
-        System.out.println("Equipos de la temporada " + anio);
+        System.out.println("\nLISTADO DE EQUIPOS - TEMPORADA " + anio);
+        List<Equipo> equipos = equipoDAO.obtenerEquiposPorTemporada(anio);
+
+        if (equipos.isEmpty()) {
+            System.out.println("No se encontraron pilotos.");
+            return;
+        }
+
+        equipos.forEach(System.out::println);
     }
 
     private void mostrarCircuitos(int anio) {
