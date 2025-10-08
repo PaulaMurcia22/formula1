@@ -2,10 +2,12 @@ package com.patrones.service;
 
 import com.patrones.entity.Equipo;
 import com.patrones.entity.Piloto;
+import com.patrones.entity.ResultadoCarrera;
 import com.patrones.service.dao.EquipoDAO;
 import com.patrones.service.dao.PilotoDAO;
 import com.patrones.utils.Consola;
 import java.util.List;
+import java.util.Map;
 
 public class TemporadaService {
 
@@ -121,6 +123,9 @@ public class TemporadaService {
 
     private void ingresarResultadosCarrera() {
         System.out.println("Ingresar resultados de carrera 2025");
+
+        Map<Integer,Integer> Puntos = new Map<Integer, Integer>() {
+        }
     }
 
 }

@@ -16,4 +16,23 @@ public class ResultadoCarrera {
         this.estado=estado;
         this.puntos_obtenidos=puntos_obtenidos;
     }
+
+    public int getId_resultado() {
+        return id_resultado;
+    }
+    public int getId_carrera() {
+        return id_carrera;
+    }
+    public int getId_piloto_temporada() {
+        return id_piloto_temporada;
+    }
+    public int getPosicion_final() {
+        return posicion_final;
+    }
+    public String getEstado() {
+        return estado;
+    }
+    public int getPuntos_obtenidos() {
+        return puntos_obtenidos;
+    }
 }
