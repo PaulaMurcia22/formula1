@@ -7,7 +7,7 @@ public class MenuService {
 
     public void mostrarMenuPrincipal() {
         while (true) {
-            System.out.println("¡BIENVENIDO A LA APP DE F1!");
+            System.out.println("¡BIENVENIDO A LA APP DE F1 \uD83C\uDFC1!");
             System.out.println("TEMPORADAS DISPONIBLES:");
             System.out.println("1. Temporada 2024");
             System.out.println("2. Temporada 2025");
