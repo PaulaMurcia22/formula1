@@ -8,8 +8,10 @@ public class Piloto {
     private String equipo;
     private int numero;
     private int anio;
+    private int puntosTotales;
+    private int victorias;
 
-    public Piloto(int id, String nombre, String apellido, String nacionalidad, String equipo, int numero,int anio) {
+    public Piloto(int id, String nombre, String apellido, String nacionalidad, String equipo, int numero, int anio, int puntosTotales, int victorias) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -17,6 +19,8 @@ public class Piloto {
         this.equipo = equipo;
         this.numero = numero;
         this.anio = anio;
+        this.puntosTotales = puntosTotales;
+        this.victorias = victorias;
     }
 
     public Piloto(int id, String nombre, String apellido, String equipo) {
@@ -33,6 +37,8 @@ public class Piloto {
     public String getNacionalidad() { return nacionalidad; }
     public int getNumero() { return numero; }
     public int getAnio() { return anio; }
+    public int getPuntosTotales() { return puntosTotales; }
+    public int getVictorias() { return victorias; }
 
 
     @Override

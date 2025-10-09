@@ -7,14 +7,18 @@ public class Equipo {
     private String pilotos;
     private String motor;
     private int anio;
+    private int puntosTotales;
+    private int victorias;
 
-    public Equipo(int id, String nombre, String pais, String pilotos, String motor,int anio) {
+    public Equipo(int id, String nombre, String pais, String pilotos, String motor,int anio, int puntosTotales, int victorias) {
         this.id = id;
         this.nombre = nombre;
         this.pais = pais;
         this.pilotos = pilotos;
         this.motor = motor;
         this.anio = anio;
+        this.puntosTotales = puntosTotales;
+        this.victorias = victorias;
     }
 
     public Equipo(int id, String nombre, String pilotos) {
@@ -29,6 +33,8 @@ public class Equipo {
     public String getPais() { return pais; }
     public String getMotor() { return motor; }
     public int getAnio() { return anio; }
+    public int getPuntosTotales() { return puntosTotales; }
+    public int getVictorias() { return victorias; }
 
 
     @Override

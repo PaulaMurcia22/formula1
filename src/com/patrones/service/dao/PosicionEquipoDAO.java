@@ -1,6 +1,6 @@
 package com.patrones.service.dao;
 
-import com.patrones.entity.PosicionPiloto;
+import com.patrones.entity.PosicionEquipo;
 import com.patrones.service.ConnectionBD;
 
 import java.sql.Connection;
@@ -10,24 +10,23 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PosicionPilotoDAO {
-
-    public List<PosicionPiloto> obtenerPosicionesPilotosTemporada(int anio) {
-        List<PosicionPiloto> posiciones = new ArrayList<>();
+public class PosicionEquipoDAO {
+    public List<PosicionEquipo> obtenerPosicionesEquiposTemporada(int anio) {
+        List<PosicionEquipo> posiciones = new ArrayList<>();
 
         String sql = """
             SELECT
-                p.id_piloto,
-                p.nombre,
-                p.apellido,
-                e.nombre AS nombre_equipo,
-                pt.puntos_totales
+                e.id_equipo,
+                e.nombre,
+                GROUP_CONCAT(DISTINCT CONCAT(p.nombre, ' ', p.apellido) SEPARATOR ', ') AS pilotos,
+                COALESCE(SUM(pt.puntos_totales), 0) AS puntos_totales
             FROM piloto_temporada pt
-            JOIN piloto p ON pt.id_piloto = p.id_piloto
             JOIN equipo e ON pt.id_equipo = e.id_equipo
+            JOIN piloto p ON pt.id_piloto = p.id_piloto
             JOIN temporada t ON pt.id_temporada = t.id_temporada
             WHERE t.anio = ?
-            ORDER BY puntos_totales DESC;
+            GROUP BY e.id_equipo, e.nombre
+            ORDER BY puntos_totales DESC;               
         """;
 
         try (Connection conn = ConnectionBD.getConnection();
@@ -40,10 +39,9 @@ public class PosicionPilotoDAO {
             while (rs.next()) {
                 posicion++;
 
-                int idPiloto = rs.getInt("id_piloto");
+                int idEquipo = rs.getInt("id_equipo");
                 String nombre = rs.getString("nombre");
-                String apellido = rs.getString("apellido");
-                String equipo = rs.getString("nombre_equipo");
+                String pilotos = rs.getString("pilotos");
                 int puntos = rs.getInt("puntos_totales");
 
                 String categoria;
@@ -53,25 +51,22 @@ public class PosicionPilotoDAO {
                     categoria = "\uD83E\uDD48";
                 } else if (posicion == 3) {
                     categoria = "\uD83E\uDD49";
-                } else if (posicion <= 10) {
-                    categoria = "\uD83D\uDD1D";
                 } else {
                     categoria = "\uD83D\uDD3B";
                 }
 
-                PosicionPiloto posicionPiloto = new PosicionPiloto(
-                        idPiloto,
+                PosicionEquipo posicionEquipo = new PosicionEquipo(
+                        idEquipo,
                         nombre,
-                        apellido,
-                        equipo,
+                        pilotos,
                         puntos,
                         categoria
                 );
-                posiciones.add(posicionPiloto);
+                posiciones.add(posicionEquipo);
             }
 
         } catch (SQLException e) {
-            System.err.println("Ocurrió un error al obtener las posiciones de los pilotos: " + e.getMessage());
+            System.err.println("Ocurrió un error al obtener las posiciones de los equipos: " + e.getMessage());
         }
 
         return posiciones;
