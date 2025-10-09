@@ -4,10 +4,8 @@ import com.patrones.entity.*;
 import com.patrones.service.dao.*;
 import com.patrones.utils.Consola;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.sql.SQLOutput;
+import java.util.*;
 
 public class TemporadaService {
 
@@ -16,8 +14,10 @@ public class TemporadaService {
     private CircuitoDAO circuitoDAO = new CircuitoDAO();
     private PosicionPilotoDAO posicionPilotoDAO = new PosicionPilotoDAO();
     private PosicionEquipoDAO posicionEquipoDAO = new PosicionEquipoDAO();
+    private PilotoTemporadaDAO pilotoTemporadaDAO = new PilotoTemporadaDAO();
     private CarreraDAO carreraDAO = new CarreraDAO();
-    private PilotoTemporada pilotoTemporada = new PilotoTemporada();
+    private ResultadoCarreraDAO resultadoCarreraDAO = new  ResultadoCarreraDAO();
+
 
 
     public void mostrarMenuTemporada(int anio) {
@@ -261,54 +261,111 @@ public class TemporadaService {
 
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("Ingresar resultados de carrera 2025");
-        System.out.println("ingrese nombre del gran premio");
-        String granPremio = sc.next();
+        System.out.println("\nIngresar resultados de carrera 2025\n");
 
-        System.out.println("ingrese el nombre del piloto");
-        String nombrePiloto= sc.next();
 
-        System.out.println("Ingrese la posicion final del piloto");
-        int posicion = sc.nextInt();
+        System.out.println("\nlas carreras para simular son: \n Gran Premio de Singapur 2025\n" +
+                "Gran Premio de Estados Unidos 2025\n" +
+                "Gran Premio de México 2025\n" +
+                "Gran Premio de Brasil 2025\n" +
+                "Gran Premio de Las Vegas 2025\n" +
+                "Gran Premio de Qatar 2025\n" +
+                "Gran Premio de Abu Dabi 2025\n\n digite el nombre de la carrera a simular");
 
-        System.out.println("Ingrese el numero de la carrera a simular");
-        int carreraSimular = sc.nextInt();
+        String granPremio = sc.nextLine().trim();
+        Carrera carrera = carreraDAO.obtenerCarreraPorNombre(granPremio, 2025);
 
-        Map<Integer,Integer> puntos = new HashMap<Integer,Integer>();
 
-        puntos.put(1,25);
-        puntos.put(2,18);
-        puntos.put(3,15);
-        puntos.put(4,12);
-        puntos.put(5,10);
-        puntos.put(6,8);
-        puntos.put(7,6);
-        puntos.put(8,4);
-        puntos.put(9,2);
-        puntos.put(10,1);
+        Map<Integer, Integer> puntos = new HashMap<Integer, Integer>();
 
-        Piloto piloto = pilotoDAO.obtenerPilotoPorNombre(nombrePiloto,2025);
-        Carrera carrera= carreraDAO.obtenerCarreraPorNombre(granPremio,2025);
-        ResultadoCarrera resultadoCarrera = new ResultadoCarrera();
+        puntos.put(1, 25);
+        puntos.put(2, 18);
+        puntos.put(3, 15);
+        puntos.put(4, 12);
+        puntos.put(5, 10);
+        puntos.put(6, 8);
+        puntos.put(7, 6);
+        puntos.put(8, 4);
+        puntos.put(9, 2);
+        puntos.put(10, 1);
 
-        if (piloto == null && carrera == null) {
-            System.out.println("Error: No se encontró el piloto o la carrera.");
-            return;
+        List<ResultadoCarrera> ListaresultadosCarrera = new ArrayList<>();
+        for(int i=1; i<=20;i++) {
+
+            System.out.println("\n"+i+"\n");
+            System.out.println("Digite el nombre del piloto ");
+                String nombre_piloto = sc.nextLine().trim();
+            if (!nombre_piloto.isEmpty()) {
+                nombre_piloto = nombre_piloto.substring(0,1).toUpperCase() + nombre_piloto.substring(1).toLowerCase();
+            }
+            Piloto id_pilotopuntos= pilotoDAO.obtenerPilotoPorNombre(nombre_piloto,2025);
+
+            System.out.println("Ingrese la posicion final de " + nombre_piloto);
+            int posicion = sc.nextInt();
+            sc.nextLine();
+
+            boolean posicionOcupada= false;
+            for(ResultadoCarrera r : ListaresultadosCarrera) {
+                if (r.getPosicion_final() == posicion) {
+                    posicionOcupada = true;
+                    break;
+                }
+            }
+            if (posicionOcupada) {
+                System.out.println("Error: la posición " + posicion + " ya fue asignada a otro piloto. Ingresa otra posición.");
+                i--; // para repetir la iteración del mismo piloto
+                continue; // vuelve a pedir el piloto
+            }
+
+            System.out.println("Indique el estado (terminado/descalificado) para "+ nombre_piloto);
+            String estado = sc.nextLine().trim();
+
+
+
+            int Ptemporada = pilotoTemporadaDAO.obtenerIdPilotoTemporadaPorNombre(nombre_piloto, 2025);
+            int puntosobtenido = puntos.getOrDefault(posicion, 0);
+
+            ResultadoCarrera resultadoCarrera= new ResultadoCarrera();
+
+            resultadoCarrera.setId_carrera(carrera.getId());
+            resultadoCarrera.setId_piloto_temporada(Ptemporada);
+            resultadoCarrera.setEstado(estado);
+            resultadoCarrera.setPosicion_final(posicion);
+            resultadoCarrera.setPuntosObtenidos(puntosobtenido);
+
+
+            if (resultadoCarreraDAO.existeResultado(Ptemporada, carrera.getId())) {
+                System.out.println("El piloto " + nombre_piloto + " ya tiene un resultado registrado para esta carrera.");
+                continue; // pasa al siguiente piloto
+            }
+
+            if (posicion == 1 || posicion==2||posicion==3) {
+                resultadoCarreraDAO.InsertarResultadosCarrera(resultadoCarrera);
+                if (posicion == 1) {
+                    System.out.println("incremento de victoria");
+                    pilotoTemporadaDAO.incrementarVictorias(Ptemporada);
+                }
+
+            }
+            pilotoTemporadaDAO.actualizarPuntosTotales(Ptemporada, puntosobtenido);
+            ListaresultadosCarrera.add(resultadoCarrera);
         }
 
-        int puntosobtenido = puntos.getOrDefault(posicion,0);
+        for(ResultadoCarrera r : ListaresultadosCarrera) {
+            int idpiloto=pilotoTemporadaDAO.obtenerIdPilotoPorIdPilotoTemporada(r.getId_piloto_temporada());
+            Piloto Pilotonombre=pilotoDAO.obtenerPiloto(idpiloto,2025);
+            Carrera carreranombre = carreraDAO.obtenerCarrera(r.getId_carrera(),2025);
 
-        resultadoCarrera.setId_carrera(carrera.getId());
-        resultadoCarrera.setId_piloto_temporada(PilotoTemporada.getId());
-        
-
-
-
-
-
-
-
-
+            System.out.printf(
+                    "%s | %s %s | Posición: %d | Puntos: %d | Estado: %s%n",
+                    carreranombre.getNombreGp(),
+                    Pilotonombre.getNombre(),
+                    Pilotonombre.getApellido(),
+                    r.getPosicion_final(),
+                    r.getPuntosObtenidos(),
+                    r.getEstado()
+            );
+        }
 
     }
 }

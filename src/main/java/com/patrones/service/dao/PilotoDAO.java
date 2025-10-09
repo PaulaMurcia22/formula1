@@ -102,7 +102,7 @@ public class PilotoDAO {
         Piloto piloto = null;
 
         String sql = """
-        SELECT 
+        SELECT
             p.id_piloto,
             p.nombre,
             p.apellido,
