@@ -60,7 +60,9 @@ public class PilotoDAO {
             p.nacionalidad,
             p.numero,
             e.nombre AS nombre_equipo,
-            t.anio
+            t.anio,
+            pt.puntos_totales,
+            pt.victorias
         FROM piloto p
         JOIN piloto_temporada pt ON p.id_piloto = pt.id_piloto
         JOIN equipo e ON pt.id_equipo = e.id_equipo
@@ -84,7 +86,9 @@ public class PilotoDAO {
                         rs.getString("nacionalidad"),
                         rs.getString("nombre_equipo"),
                         rs.getInt("numero"),
-                        rs.getInt("anio")
+                        rs.getInt("anio"),
+                        rs.getInt("puntos_totales"),
+                        rs.getInt("victorias")
                 );
             }
 

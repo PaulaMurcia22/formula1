@@ -3,18 +3,22 @@ package com.patrones.entity;
 public class Equipo {
     private int id;
     private String nombre;
-    private String nacionalidad;
+    private String pais;
     private String pilotos;
-    private int numero;
+    private String motor;
     private int anio;
+    private int puntosTotales;
+    private int victorias;
 
-    public Equipo(int id, String nombre, String nacionalidad, String pilotos, int numero,int anio) {
+    public Equipo(int id, String nombre, String pais, String pilotos, String motor,int anio, int puntosTotales, int victorias) {
         this.id = id;
         this.nombre = nombre;
-        this.nacionalidad = nacionalidad;
+        this.pais = pais;
         this.pilotos = pilotos;
-        this.numero = numero;
+        this.motor = motor;
         this.anio = anio;
+        this.puntosTotales = puntosTotales;
+        this.victorias = victorias;
     }
 
     public Equipo(int id, String nombre, String pilotos) {
@@ -26,9 +30,11 @@ public class Equipo {
     public int getId() { return id; }
     public String getNombre() { return nombre; }
     public String getPilotos() { return pilotos; }
-    public String getNacionalidad() { return nacionalidad; }
-    public int getNumero() { return numero; }
+    public String getPais() { return pais; }
+    public String getMotor() { return motor; }
     public int getAnio() { return anio; }
+    public int getPuntosTotales() { return puntosTotales; }
+    public int getVictorias() { return victorias; }
 
 
     @Override

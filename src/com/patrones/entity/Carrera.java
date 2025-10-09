@@ -1,29 +1,32 @@
 package com.patrones.entity;
 
-import java.util.Date;
-
-
 public class Carrera {
+    private int id;
+    private String nombreGp;
+    private String fecha;
+    private String circuito;
+    private int numVueltas;
+    private int anio;
 
-private int id_carrera;
-private String nombre_gp;
-private Date fecha;
-private int id_circuito;
-private int id_temporada;
-private int num_vueltas;
-private int pole_position;
-private int vuelta_rapida;
-
-    public Carrera(int id_carrera,String nombre_gp,Date fecha,int id_circuito,int id_temporada,int num_vueltas,int pole_position,int vuelta_rapida) {
-        this.id_carrera = id_carrera;
-        this.nombre_gp = nombre_gp;
+    public Carrera(int id, String nombreGp, String fecha, String circuito, int numVueltas, int anio) {
+        this.id = id;
+        this.nombreGp = nombreGp;
         this.fecha = fecha;
-        this.id_circuito = id_circuito;
-        this.id_temporada = id_temporada;
-        this.num_vueltas = num_vueltas;
-        this.pole_position = pole_position;
-        this.vuelta_rapida = vuelta_rapida;
+        this.circuito = circuito;
+        this.numVueltas = numVueltas;
+        this.anio = anio;
     }
 
+    public int getId() { return id; }
+    public String getNombreGp() { return nombreGp; }
+    public String getFecha() { return fecha; }
+    public String getCircuito() { return circuito; }
+    public int getNumVueltas() { return numVueltas; }
+    public int getAnio() { return anio; }
 
+    @Override
+    public String toString() {
+        return String.format("%d - %s | Fecha: %s | Circuito: %s",
+                id, nombreGp, fecha, circuito);
+    }
 }
