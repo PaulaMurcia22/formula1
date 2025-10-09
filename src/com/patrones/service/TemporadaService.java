@@ -3,7 +3,11 @@ package com.patrones.service;
 import com.patrones.entity.*;
 import com.patrones.service.dao.*;
 import com.patrones.utils.Consola;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
 public class TemporadaService {
 
@@ -13,6 +17,7 @@ public class TemporadaService {
     private PosicionPilotoDAO posicionPilotoDAO = new PosicionPilotoDAO();
     private PosicionEquipoDAO posicionEquipoDAO = new PosicionEquipoDAO();
     private CarreraDAO carreraDAO = new CarreraDAO();
+    private PilotoTemporada pilotoTemporada = new PilotoTemporada();
 
 
     public void mostrarMenuTemporada(int anio) {
@@ -253,6 +258,57 @@ public class TemporadaService {
     }
 
     private void ingresarResultadosCarrera() {
+
+        Scanner sc = new Scanner(System.in);
+
         System.out.println("Ingresar resultados de carrera 2025");
+        System.out.println("ingrese nombre del gran premio");
+        String granPremio = sc.next();
+
+        System.out.println("ingrese el nombre del piloto");
+        String nombrePiloto= sc.next();
+
+        System.out.println("Ingrese la posicion final del piloto");
+        int posicion = sc.nextInt();
+
+        System.out.println("Ingrese el numero de la carrera a simular");
+        int carreraSimular = sc.nextInt();
+
+        Map<Integer,Integer> puntos = new HashMap<Integer,Integer>();
+
+        puntos.put(1,25);
+        puntos.put(2,18);
+        puntos.put(3,15);
+        puntos.put(4,12);
+        puntos.put(5,10);
+        puntos.put(6,8);
+        puntos.put(7,6);
+        puntos.put(8,4);
+        puntos.put(9,2);
+        puntos.put(10,1);
+
+        Piloto piloto = pilotoDAO.obtenerPilotoPorNombre(nombrePiloto,2025);
+        Carrera carrera= carreraDAO.obtenerCarreraPorNombre(granPremio,2025);
+        ResultadoCarrera resultadoCarrera = new ResultadoCarrera();
+
+        if (piloto == null && carrera == null) {
+            System.out.println("Error: No se encontró el piloto o la carrera.");
+            return;
+        }
+
+        int puntosobtenido = puntos.getOrDefault(posicion,0);
+
+        resultadoCarrera.setId_carrera(carrera.getId());
+        resultadoCarrera.setId_piloto_temporada(PilotoTemporada.getId());
+        
+
+
+
+
+
+
+
+
+
     }
 }

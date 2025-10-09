@@ -143,4 +143,47 @@ public class CarreraDAO {
             System.err.println("Error al obtener resultados de la carrera: " + e.getMessage());
         }
     }
+    public Carrera obtenerCarreraPorNombre(String nombreGp, int anio) {
+        Carrera carrera = null;
+
+        String sql = """
+        SELECT 
+            c.id_carrera,
+            c.nombre_gp,
+            c.fecha,
+            cir.nombre AS circuito,
+            c.num_vueltas,
+            t.anio
+        FROM carrera c
+        JOIN circuito cir ON c.id_circuito = cir.id_circuito
+        JOIN temporada t ON c.id_temporada = t.id_temporada
+        WHERE LOWER(c.nombre_gp) = LOWER(?) 
+        AND t.anio = ?;
+    """;
+
+        try (Connection conn = ConnectionBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, nombreGp);
+            stmt.setInt(2, anio);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                carrera = new Carrera(
+                        rs.getInt("id_carrera"),
+                        rs.getString("nombre_gp"),
+                        rs.getString("fecha"),
+                        rs.getString("circuito"),
+                        rs.getInt("num_vueltas"),
+                        rs.getInt("anio")
+                );
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al obtener la carrera por nombre: " + e.getMessage());
+        }
+
+        return carrera;
+    }
 }
