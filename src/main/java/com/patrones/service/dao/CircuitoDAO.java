@@ -1,8 +1,6 @@
 package com.patrones.service.dao;
 
 import com.patrones.entity.Circuito;
-import com.patrones.entity.Equipo;
-import com.patrones.entity.Piloto;
 import com.patrones.service.ConnectionBD;
 
 import java.sql.Connection;
