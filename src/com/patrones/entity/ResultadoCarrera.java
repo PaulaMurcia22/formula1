@@ -35,4 +35,23 @@ public class ResultadoCarrera {
     public int getPuntos_obtenidos() {
         return puntos_obtenidos;
     }
+    public void setId_resultado(int id_resultado) {
+        this.id_resultado = id_resultado;
+    }
+    public void setId_carrera(int id_carrera) {
+        this.id_carrera = id_carrera;
+    }
+    public void setId_piloto_temporada(int id_piloto_temporada) {
+        this.id_piloto_temporada = id_piloto_temporada;
+    }
+    public void setPosicion_final(int posicion_final) {
+        this.posicion_final = posicion_final;
+    }
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    public void setPuntos_obtenidos(int puntos_obtenidos) {
+        this.puntos_obtenidos = puntos_obtenidos;
+    }
+
 }

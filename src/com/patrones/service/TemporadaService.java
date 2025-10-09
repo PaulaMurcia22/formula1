@@ -6,8 +6,11 @@ import com.patrones.entity.ResultadoCarrera;
 import com.patrones.service.dao.EquipoDAO;
 import com.patrones.service.dao.PilotoDAO;
 import com.patrones.utils.Consola;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 public class TemporadaService {
 
@@ -123,9 +126,38 @@ public class TemporadaService {
 
     private void ingresarResultadosCarrera() {
         System.out.println("Ingresar resultados de carrera 2025");
+        Scanner sc= new Scanner(System.in);
+        PilotoDAO  pilotoDAO1 = new PilotoDAO();
 
-        Map<Integer,Integer> Puntos = new Map<Integer, Integer>() {
-        }
+        System.out.println("Digite el nombre del premio de la carrera");
+        String nombre_granpremio= sc.next();
+
+        System.out.println("Digite la posicion del piloto al finalizar la carrera");
+        int posicion =  sc.nextInt();
+
+        System.out.println("Digite le nombre del piloto");
+        String nombre_piloto= sc.next();
+
+        Map<Integer,Integer> puntos = new HashMap<Integer, Integer>() ;
+        puntos.put(1,25);
+        puntos.put(2,18);
+        puntos.put(3,15);
+        puntos.put(4,12);
+        puntos.put(5,10);
+        puntos.put(6,8);
+        puntos.put(7,6);
+        puntos.put(8,4);
+        puntos.put(9,2);
+        puntos.put(10,1);
+
+        Piloto piloto= pilotoDAO1.obtenerPilotoPorNombre(nombre_piloto,2025);
+
+        ResultadoCarrera   resultado  = new ResultadoCarrera();
+        resultado.setId_carrera();
+
+
+
+
     }
 
 }

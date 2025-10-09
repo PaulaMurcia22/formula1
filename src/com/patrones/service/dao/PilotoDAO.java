@@ -94,5 +94,52 @@ public class PilotoDAO {
 
         return piloto;
     }
+    public Piloto obtenerPilotoPorNombre(String nombrePiloto, int anio) {
+        Piloto piloto = null;
+
+        String sql = """
+        SELECT 
+            p.id_piloto,
+            p.nombre,
+            p.apellido,
+            p.nacionalidad,
+            p.numero,
+            e.nombre AS nombre_equipo,
+            t.anio
+        FROM piloto p
+        JOIN piloto_temporada pt ON p.id_piloto = pt.id_piloto
+        JOIN equipo e ON pt.id_equipo = e.id_equipo
+        JOIN temporada t ON pt.id_temporada = t.id_temporada
+        WHERE LOWER(p.nombre) = LOWER(?)
+        AND t.anio = ?;
+    """;
+
+        try (Connection conn = ConnectionBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, nombrePiloto);
+            stmt.setInt(2, anio);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                piloto = new Piloto(
+                        rs.getInt("id_piloto"),
+                        rs.getString("nombre"),
+                        rs.getString("apellido"),
+                        rs.getString("nacionalidad"),
+                        rs.getString("nombre_equipo"),
+                        rs.getInt("numero"),
+                        rs.getInt("anio")
+                );
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Ocurrió un error al obtener el piloto por nombre: " + e.getMessage());
+        }
+
+        return piloto;
+    }
+
 
 }
