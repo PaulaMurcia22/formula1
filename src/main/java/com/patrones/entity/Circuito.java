@@ -3,6 +3,7 @@ package com.patrones.entity;
 import java.util.Date;
 
 public class Circuito {
+    //atributos del circuito
     private int id;
     private String nombre;
     private String pais;
@@ -10,9 +11,9 @@ public class Circuito {
     private String longitud_km;
     private String curvas;
     private String nombre_gp;
-
     private int anio;
 
+    //constructor con todos los atributos del circuito
     public Circuito(int id, String nombre, String pais, String longitud_km, String curvas, Date fecha, String nombre_gp, int anio) {
         this.id = id;
         this.nombre = nombre;
@@ -24,6 +25,7 @@ public class Circuito {
         this.anio = anio;
     }
 
+    //constructor con la información básica del circuito
     public Circuito(int id, String nombre, String pais, Date fecha) {
         this.id = id;
         this.nombre = nombre;
@@ -31,6 +33,7 @@ public class Circuito {
         this.fecha = fecha;
     }
 
+    //getters
     public int getId() { return id; }
     public String getNombre() { return nombre; }
     public String getPais() { return pais; }
@@ -40,7 +43,7 @@ public class Circuito {
     public String getNombreGp() { return nombre_gp; }
     public int getAnio() { return anio; }
 
-
+    //devuelve la visualización de la información del circuito para la lista
     @Override
     public String toString() {
         return String.format("%d - %s | Pais: %s) | Fecha: %s",

@@ -2,6 +2,7 @@ package com.patrones.entity;
 
 public class PilotoTemporada {
 
+    //atributos de PilotoTemporada
     private int id_piloto_temporada;
     private int id_piloto;
     private int id_equipo;
@@ -10,9 +11,12 @@ public class PilotoTemporada {
     private int victorias;
     private int temporada;
 
+    //constructor vacio
     public PilotoTemporada() {
 
     }
+
+    //getters y setters
     public int getId_piloto_temporada() {
         return id_piloto_temporada;
     }
@@ -55,6 +59,4 @@ public class PilotoTemporada {
     public void setTemporada(int temporada) {
         this.temporada = temporada;
     }
-
-
 }

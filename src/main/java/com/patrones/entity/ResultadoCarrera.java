@@ -1,6 +1,7 @@
 package com.patrones.entity;
 
 public class ResultadoCarrera {
+    //atributos de ResultadoCarrera
     private int id_resultado;
     private int id_carrera;
     private int id_piloto_temporada;
@@ -8,17 +9,18 @@ public class ResultadoCarrera {
     private String estado;
     private int puntosObtenidos;
 
+    //constructor vacio
     public ResultadoCarrera () {
 
     };
 
+    //getters y setters
     public int getId_resultado() {
         return id_resultado;
     }
     public void setId_resultado(int id_resultado) {
         this.id_resultado = id_resultado;
     }
-
     public int getId_carrera() {
         return id_carrera;
     }
@@ -50,6 +52,7 @@ public class ResultadoCarrera {
         this.puntosObtenidos = puntosObtenidos;
     }
 
+    //devuelve la visualización de la información de ResultadoCarrera para la lista
     @Override
     public String toString() {
         return String.format(
