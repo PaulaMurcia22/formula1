@@ -9,6 +9,7 @@ import java.util.List;
 
 public class PilotoTemporadaDAO {
 
+    // Obtiene el id_piloto_temporada a partir del nombre del piloto y el año
     public int obtenerIdPilotoTemporadaPorNombre(String nombrePiloto, int anio) {
         int idPilotoTemporada = -1;
 
@@ -24,11 +25,13 @@ public class PilotoTemporadaDAO {
         try (Connection conn = ConnectionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            // Se asignan los parámetros de búsqueda
             stmt.setString(1, nombrePiloto);
             stmt.setInt(2, anio);
 
             ResultSet rs = stmt.executeQuery();
 
+            // Si se encuentra el piloto, se guarda su id_piloto_temporada
             if (rs.next()) {
                 idPilotoTemporada = rs.getInt("id_piloto_temporada");
             }
@@ -40,7 +43,7 @@ public class PilotoTemporadaDAO {
         return idPilotoTemporada;
     }
 
-
+    // Actualiza los puntos totales sumando los nuevos puntos
     public void actualizarPuntosTotales(int idPilotoTemporada, int puntosNuevos) {
         String sql = """
         UPDATE piloto_temporada
@@ -55,6 +58,8 @@ public class PilotoTemporadaDAO {
             stmt.setInt(2, idPilotoTemporada);
 
             int filas = stmt.executeUpdate();
+
+            // Verifica si se actualizó correctamente
             if (filas > 0) {
                 System.out.println("✅ Puntos actualizados correctamente en piloto_temporada.");
             } else {
@@ -66,19 +71,24 @@ public class PilotoTemporadaDAO {
         }
     }
 
+    // Incrementa en 1 la cantidad de victorias del piloto
     public void incrementarVictorias(int idPiloto) {
         String sql = "UPDATE piloto_temporada SET victorias = victorias + 1 WHERE id_piloto = ?";
 
         try (Connection conn = ConnectionBD.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setInt(1, idPiloto);
             ps.executeUpdate();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
+    // Obtiene el id_piloto a partir del id_piloto_temporada
     public int obtenerIdPilotoPorIdPilotoTemporada(int idPilotoTemporada) {
-        int idPiloto = -1; // valor por defecto si no se encuentra
+        int idPiloto = -1;
 
         String sql = """
         SELECT id_piloto
@@ -92,6 +102,8 @@ public class PilotoTemporadaDAO {
             stmt.setInt(1, idPilotoTemporada);
 
             ResultSet rs = stmt.executeQuery();
+
+            // Si se encuentra el registro, se obtiene el id del piloto
             if (rs.next()) {
                 idPiloto = rs.getInt("id_piloto");
             }

@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CircuitoDAO {
+
+    // Obtiene la lista de circuitos correspondientes a una temporada específica
     public List<Circuito> obtenerCircuitosPorTemporada(int anio) {
         List<Circuito> circuitos = new ArrayList<>();
 
@@ -25,14 +27,16 @@ public class CircuitoDAO {
         JOIN temporada t ON ca.id_temporada = t.id_temporada
         WHERE t.anio = ?
         ORDER BY ca.fecha;
-    """;
+        """;
 
         try (Connection conn = ConnectionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            // Se pasa el año de la temporada como parámetro
             stmt.setInt(1, anio);
             ResultSet rs = stmt.executeQuery();
 
+            // Recorre los resultados y crea objetos Circuito
             while (rs.next()) {
                 Circuito circuito = new Circuito(
                         rs.getInt("id_circuito"),
@@ -44,12 +48,13 @@ public class CircuitoDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("Ocurrio un error al obtener los circuitos: " + e.getMessage());
+            System.err.println("Ocurrió un error al obtener los circuitos: " + e.getMessage());
         }
 
         return circuitos;
     }
 
+    // Obtiene la información detallada de un circuito específico en una temporada
     public Circuito obtenerCircuito(int idCircuito, int anio) {
         Circuito circuito = null;
 
@@ -69,15 +74,17 @@ public class CircuitoDAO {
         WHERE c.id_circuito = ?
         AND t.anio = ?
         ORDER BY ca.fecha;
-                """;
+        """;
 
         try (Connection conn = ConnectionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            // Se establecen los parámetros del circuito y la temporada
             stmt.setInt(1, idCircuito);
             stmt.setInt(2, anio);
             ResultSet rs = stmt.executeQuery();
 
+            // Si se encuentra, se crea el objeto Circuito con los datos obtenidos
             if (rs.next()) {
                 circuito = new Circuito(
                         rs.getInt("id_circuito"),
@@ -92,7 +99,7 @@ public class CircuitoDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("Ocurrio un error al obtener el circuito por ID: " + e.getMessage());
+            System.err.println("Ocurrió un error al obtener el circuito por ID: " + e.getMessage());
         }
 
         return circuito;

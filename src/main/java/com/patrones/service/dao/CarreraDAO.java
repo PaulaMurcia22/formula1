@@ -8,6 +8,7 @@ import java.util.List;
 
 public class CarreraDAO {
 
+    // Obtiene la lista de carreras de una temporada específica
     public List<Carrera> obtenerCarrerasPorTemporada(int anio) {
         List<Carrera> carreras = new ArrayList<>();
 
@@ -29,9 +30,11 @@ public class CarreraDAO {
         try (Connection conn = ConnectionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            // Se pasa el año como parámetro
             stmt.setInt(1, anio);
             ResultSet rs = stmt.executeQuery();
 
+            // Recorre los resultados y crea objetos Carrera
             while (rs.next()) {
                 Carrera carrera = new Carrera(
                         rs.getInt("id_carrera"),
@@ -51,6 +54,7 @@ public class CarreraDAO {
         return carreras;
     }
 
+    // Obtiene una carrera específica por su ID y año
     public Carrera obtenerCarrera(int idCarrera, int anio) {
         Carrera carrera = null;
 
@@ -71,10 +75,12 @@ public class CarreraDAO {
         try (Connection conn = ConnectionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            // Se establecen los parámetros de búsqueda
             stmt.setInt(1, idCarrera);
             stmt.setInt(2, anio);
             ResultSet rs = stmt.executeQuery();
 
+            // Si se encuentra, se crea el objeto Carrera
             if (rs.next()) {
                 carrera = new Carrera(
                         rs.getInt("id_carrera"),
@@ -93,6 +99,7 @@ public class CarreraDAO {
         return carrera;
     }
 
+    // Muestra los resultados de una carrera con nombre, equipo, posición y puntos
     public void mostrarResultadosCarrera(int idCarrera) {
         String sql = """
             SELECT 
@@ -117,9 +124,11 @@ public class CarreraDAO {
         try (Connection conn = ConnectionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            // Se pasa el ID de la carrera
             stmt.setInt(1, idCarrera);
             ResultSet rs = stmt.executeQuery();
 
+            // Se muestran los resultados con emojis según la posición
             while (rs.next()) {
                 int posicion = rs.getInt("posicion_final");
                 String nombre = rs.getString("nombre");
@@ -129,10 +138,10 @@ public class CarreraDAO {
 
                 String emoji;
                 switch (posicion) {
-                    case 1 -> emoji = "\uD83E\uDD47";
-                    case 2 -> emoji = "\uD83E\uDD48";
-                    case 3 -> emoji = "\uD83E\uDD49";
-                    default -> emoji = "\uD83D\uDD1D";
+                    case 1 -> emoji = "\uD83E\uDD47"; // 🥇
+                    case 2 -> emoji = "\uD83E\uDD48"; // 🥈
+                    case 3 -> emoji = "\uD83E\uDD49"; // 🥉
+                    default -> emoji = "\uD83D\uDD1D"; // 🔝
                 }
 
                 System.out.printf("%s %s %s | Equipo: %s | Puntos: %d%n",
@@ -143,6 +152,8 @@ public class CarreraDAO {
             System.err.println("Error al obtener resultados de la carrera: " + e.getMessage());
         }
     }
+
+    // Obtiene una carrera por su nombre y año de temporada
     public Carrera obtenerCarreraPorNombre(String nombreGp, int anio) {
         Carrera carrera = null;
 
@@ -159,16 +170,18 @@ public class CarreraDAO {
         JOIN temporada t ON c.id_temporada = t.id_temporada
         WHERE LOWER(c.nombre_gp) = LOWER(?) 
         AND t.anio = ?;
-    """;
+        """;
 
         try (Connection conn = ConnectionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            // Se establecen los parámetros de búsqueda
             stmt.setString(1, nombreGp);
             stmt.setInt(2, anio);
 
             ResultSet rs = stmt.executeQuery();
 
+            // Si existe, se construye el objeto Carrera
             if (rs.next()) {
                 carrera = new Carrera(
                         rs.getInt("id_carrera"),

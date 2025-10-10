@@ -99,8 +99,9 @@ public class PilotoDAO {
         return piloto;
     }
     public Piloto obtenerPilotoPorNombre(String nombrePiloto, int anio) {
-        Piloto piloto = null;
+        Piloto piloto = null; // Variable donde se guardará el piloto encontrado
 
+        // Consulta SQL para obtener los datos del piloto según su nombre y año de temporada
         String sql = """
         SELECT
             p.id_piloto,
@@ -121,11 +122,14 @@ public class PilotoDAO {
         try (Connection conn = ConnectionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            // Se asignan los parámetros de búsqueda
             stmt.setString(1, nombrePiloto);
             stmt.setInt(2, anio);
 
+            // Ejecuta la consulta
             ResultSet rs = stmt.executeQuery();
 
+            // Si el piloto existe, se crea el objeto con sus datos
             if (rs.next()) {
                 piloto = new Piloto(
                         rs.getInt("id_piloto"),
@@ -139,11 +143,14 @@ public class PilotoDAO {
             }
 
         } catch (SQLException e) {
+            // Si ocurre un error en la conexión o consulta, se muestra el mensaje
             System.err.println("Ocurrió un error al obtener el piloto por nombre: " + e.getMessage());
         }
 
+        // Retorna el piloto encontrado o null si no existe
         return piloto;
     }
+
 
 
 }
