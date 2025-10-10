@@ -1,6 +1,7 @@
 package com.patrones.entity;
 
 public class Piloto {
+    //atributos del piloto
     private int id;
     private String nombre;
     private String apellido;
@@ -11,6 +12,7 @@ public class Piloto {
     private int puntosTotales;
     private int victorias;
 
+    //constructor con todos los atributos del piloto
     public Piloto(int id, String nombre, String apellido, String nacionalidad, String equipo, int numero, int anio, int puntosTotales, int victorias) {
         this.id = id;
         this.nombre = nombre;
@@ -23,6 +25,7 @@ public class Piloto {
         this.victorias = victorias;
     }
 
+    //constructor para crear un piloto
     public Piloto(int id, String nombre, String apellido, String nacionalidad, String equipo, int numero, int anio) {
         this.id = id;
         this.nombre = nombre;
@@ -33,6 +36,7 @@ public class Piloto {
         this.anio = anio;
     }
 
+    //constructor con la información básica del piloto
     public Piloto(int id, String nombre, String apellido, String equipo) {
         this.id = id;
         this.nombre = nombre;
@@ -40,6 +44,7 @@ public class Piloto {
         this.equipo = equipo;
     }
 
+    //getters
     public int getId() { return id; }
     public String getNombre() { return nombre; }
     public String getApellido() { return apellido; }
@@ -51,6 +56,7 @@ public class Piloto {
     public int getVictorias() { return victorias; }
 
 
+    //devuelve la visualización de la información del piloto para la lista
     @Override
     public String toString() {
         return String.format("%d - %s %s | Equipo: %s",
