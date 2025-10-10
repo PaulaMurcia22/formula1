@@ -12,9 +12,12 @@ import java.util.List;
 
 public class PosicionPilotoDAO {
 
+    // Metodo que obtiene la lista de posiciones de los pilotos en una temporada específica
     public List<PosicionPiloto> obtenerPosicionesPilotosTemporada(int anio) {
+        // Lista donde se guardarán las posiciones de los pilotos
         List<PosicionPiloto> posiciones = new ArrayList<>();
 
+        // Consulta SQL que obtiene los datos del piloto, su equipo y los puntos totales
         String sql = """
             SELECT
                 p.id_piloto,
@@ -30,35 +33,42 @@ public class PosicionPilotoDAO {
             ORDER BY puntos_totales DESC;
         """;
 
+        // Se usa try-with-resources para cerrar la conexión y el PreparedStatement automáticamente
         try (Connection conn = ConnectionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            // Asigna el año (temporada) al parámetro de la consulta
             stmt.setInt(1, anio);
+
+            // Ejecuta la consulta
             ResultSet rs = stmt.executeQuery();
 
-            int posicion = 0;
+            int posicion = 0; // contador para la posición en la tabla
             while (rs.next()) {
                 posicion++;
 
+                // Obtiene los valores de cada columna del resultado
                 int idPiloto = rs.getInt("id_piloto");
                 String nombre = rs.getString("nombre");
                 String apellido = rs.getString("apellido");
                 String equipo = rs.getString("nombre_equipo");
                 int puntos = rs.getInt("puntos_totales");
 
+                // Determina el ícono o "categoría" según la posición del piloto
                 String categoria;
                 if (posicion == 1) {
-                    categoria = "\uD83E\uDD47";
+                    categoria = "\uD83E\uDD47"; // 🥇 Primer lugar
                 } else if (posicion == 2) {
-                    categoria = "\uD83E\uDD48";
+                    categoria = "\uD83E\uDD48"; // 🥈 Segundo lugar
                 } else if (posicion == 3) {
-                    categoria = "\uD83E\uDD49";
+                    categoria = "\uD83E\uDD49"; // 🥉 Tercer lugar
                 } else if (posicion <= 10) {
-                    categoria = "\uD83D\uDD1D";
+                    categoria = "\uD83D\uDD1D"; // 🔝 Top 10
                 } else {
-                    categoria = "\uD83D\uDD3B";
+                    categoria = "\uD83D\uDD3B"; // 🔻 Resto de posiciones
                 }
 
+                // Crea un objeto con la información del piloto
                 PosicionPiloto posicionPiloto = new PosicionPiloto(
                         idPiloto,
                         nombre,
@@ -67,13 +77,17 @@ public class PosicionPilotoDAO {
                         puntos,
                         categoria
                 );
+
+                // Lo agrega a la lista
                 posiciones.add(posicionPiloto);
             }
 
         } catch (SQLException e) {
+            // Si ocurre un error con la base de datos, se muestra el mensaje
             System.err.println("Ocurrió un error al obtener las posiciones de los pilotos: " + e.getMessage());
         }
 
+        // Devuelve la lista de posiciones con los pilotos ordenados por puntos
         return posiciones;
     }
 }

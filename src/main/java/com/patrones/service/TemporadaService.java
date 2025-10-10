@@ -3,18 +3,22 @@ package com.patrones.service;
 import com.patrones.entity.*;
 import com.patrones.service.dao.*;
 import com.patrones.utils.Consola;
-import java.util.List;
+
+import java.util.*;
 
 public class TemporadaService {
 
+    // Objetos DAO para acceder a la base de datos de pilotos, equipos, carreras, etc.
     private PilotoDAO pilotoDAO = new PilotoDAO();
     private EquipoDAO equipoDAO = new EquipoDAO();
     private CircuitoDAO circuitoDAO = new CircuitoDAO();
     private PosicionPilotoDAO posicionPilotoDAO = new PosicionPilotoDAO();
     private PosicionEquipoDAO posicionEquipoDAO = new PosicionEquipoDAO();
+    private PilotoTemporadaDAO pilotoTemporadaDAO = new PilotoTemporadaDAO();
     private CarreraDAO carreraDAO = new CarreraDAO();
+    private ResultadoCarreraDAO resultadoCarreraDAO = new ResultadoCarreraDAO();
 
-
+    // Muestra el menú principal de una temporada
     public void mostrarMenuTemporada(int anio) {
         boolean salir = false;
         while (!salir) {
@@ -26,20 +30,21 @@ public class TemporadaService {
             System.out.println("5. Tabla de posiciones de Pilotos");
             System.out.println("6. Tabla de posiciones de Equipos");
 
-
-            if (anio == 2025)
-            {
+            // Solo en la temporada 2025 se puede ingresar resultados
+            if (anio == 2025) {
                 System.out.println("7. Ingresar resultados carrera");
                 System.out.println("8. Regresar al menú principal");
-            } else{
+            } else {
                 System.out.println("7. Regresar al menú principal");
             }
 
+            // Lee la opción que el usuario elija
             int opcion = Consola.leerEntero("Selecciona una opción: ");
             salir = manejarOpcion(anio, opcion);
         }
     }
 
+    // Maneja lo que hace el menú según la temporada
     private boolean manejarOpcion(int anio, int opcion) {
         if (anio == 2024) {
             switch (opcion) {
@@ -49,7 +54,7 @@ public class TemporadaService {
                 case 4 -> mostrarCarreras(anio);
                 case 5 -> mostrarTablaPilotos(anio);
                 case 6 -> mostrarTablaEquipos(anio);
-                case 7 -> { return true; }
+                case 7 -> { return true; } // salir
                 default -> System.out.println("La opción no es válida para la temporada 2024.");
             }
         } else if (anio == 2025) {
@@ -61,13 +66,14 @@ public class TemporadaService {
                 case 5 -> mostrarTablaPilotos(anio);
                 case 6 -> mostrarTablaEquipos(anio);
                 case 7 -> ingresarResultadosCarrera();
-                case 8 -> { return true; }
+                case 8 -> { return true; } // salir
                 default -> System.out.println("La opción no es válida para la temporada 2025.");
             }
         }
         return false;
     }
 
+    // Muestra todos los pilotos y permite ver detalles de uno
     private void mostrarPilotos(int anio) {
         System.out.println("\nLISTADO DE PILOTOS - TEMPORADA " + anio);
         List<Piloto> pilotos = pilotoDAO.obtenerPilotosPorTemporada(anio);
@@ -80,29 +86,24 @@ public class TemporadaService {
         pilotos.forEach(System.out::println);
 
         while (true) {
-            int idSeleccionado = Consola.leerEntero("\nIngrese el Id del piloto para ver su detalle o ingrese 0 para regresar: ");
-
-            if (idSeleccionado == 0) {
-                break;
-            }
+            int idSeleccionado = Consola.leerEntero("\nIngrese el Id del piloto o 0 para regresar: ");
+            if (idSeleccionado == 0) break;
 
             Piloto pilotoSeleccionado = pilotoDAO.obtenerPiloto(idSeleccionado, anio);
             if (pilotoSeleccionado != null) {
                 System.out.println("\n--- DETALLES DEL PILOTO ---");
-                System.out.println("ID: " + pilotoSeleccionado.getId());
                 System.out.println("Nombre: " + pilotoSeleccionado.getNombre() + " " + pilotoSeleccionado.getApellido());
                 System.out.println("Equipo: " + pilotoSeleccionado.getEquipo());
                 System.out.println("Número: " + pilotoSeleccionado.getNumero());
-                System.out.println("Nacionalidad: " + pilotoSeleccionado.getNacionalidad());
-                System.out.println("Puntos Totales: " + pilotoSeleccionado.getPuntosTotales());
+                System.out.println("Puntos: " + pilotoSeleccionado.getPuntosTotales());
                 System.out.println("Victorias: " + pilotoSeleccionado.getVictorias());
-                System.out.println("Año: " + pilotoSeleccionado.getAnio());
             } else {
-                System.out.println("No se encontró un piloto con ese Id. Ingrese un Id válido por favor.");
+                System.out.println("No se encontró un piloto con ese Id.");
             }
         }
     }
 
+    // Muestra los equipos y permite ver detalles de uno
     private void mostrarEquipos(int anio) {
         System.out.println("\nLISTADO DE EQUIPOS - TEMPORADA " + anio);
         List<Equipo> equipos = equipoDAO.obtenerEquiposPorTemporada(anio);
@@ -115,29 +116,24 @@ public class TemporadaService {
         equipos.forEach(System.out::println);
 
         while (true) {
-            int idSeleccionado = Consola.leerEntero("\nIngrese el Id del equipo para ver su detalle o ingrese 0 para regresar: ");
-
-            if (idSeleccionado == 0) {
-                break;
-            }
+            int idSeleccionado = Consola.leerEntero("\nIngrese el Id del equipo o 0 para regresar: ");
+            if (idSeleccionado == 0) break;
 
             Equipo equipoSeleccionado = equipoDAO.obtenerEquipo(idSeleccionado, anio);
             if (equipoSeleccionado != null) {
                 System.out.println("\n--- DETALLES DEL EQUIPO ---");
-                System.out.println("ID: " + equipoSeleccionado.getId());
                 System.out.println("Nombre: " + equipoSeleccionado.getNombre());
-                System.out.println("Pais: " + equipoSeleccionado.getPais());
+                System.out.println("País: " + equipoSeleccionado.getPais());
                 System.out.println("Motor: " + equipoSeleccionado.getMotor());
                 System.out.println("Pilotos: " + equipoSeleccionado.getPilotos());
-                System.out.println("Puntos Totales: " + equipoSeleccionado.getPuntosTotales());
-                System.out.println("Victorias: " + equipoSeleccionado.getVictorias());
-                System.out.println("Año: " + equipoSeleccionado.getAnio());
+                System.out.println("Puntos: " + equipoSeleccionado.getPuntosTotales());
             } else {
-                System.out.println("No se encontró un piloto con ese Id. Ingrese un Id válido por favor.");
+                System.out.println("No se encontró un equipo con ese Id.");
             }
         }
     }
 
+    // Muestra circuitos disponibles y permite ver sus detalles
     private void mostrarCircuitos(int anio) {
         System.out.println("\nLISTADO DE CIRCUITOS - TEMPORADA " + anio);
         List<Circuito> circuitos = circuitoDAO.obtenerCircuitosPorTemporada(anio);
@@ -150,29 +146,24 @@ public class TemporadaService {
         circuitos.forEach(System.out::println);
 
         while (true) {
-            int idSeleccionado = Consola.leerEntero("\nIngrese el Id del circuito para ver su detalle o ingrese 0 para regresar: ");
-
-            if (idSeleccionado == 0) {
-                break;
-            }
+            int idSeleccionado = Consola.leerEntero("\nIngrese el Id del circuito o 0 para regresar: ");
+            if (idSeleccionado == 0) break;
 
             Circuito circuitoSeleccionado = circuitoDAO.obtenerCircuito(idSeleccionado, anio);
             if (circuitoSeleccionado != null) {
                 System.out.println("\n--- DETALLES DEL CIRCUITO ---");
-                System.out.println("ID: " + circuitoSeleccionado.getId());
                 System.out.println("Nombre: " + circuitoSeleccionado.getNombre());
-                System.out.println("Pais: " + circuitoSeleccionado.getPais());
-                System.out.println("Longitud (Km): " + circuitoSeleccionado.getLongitudKm());
+                System.out.println("País: " + circuitoSeleccionado.getPais());
+                System.out.println("Longitud: " + circuitoSeleccionado.getLongitudKm() + " km");
                 System.out.println("Curvas: " + circuitoSeleccionado.getCurvas());
                 System.out.println("Fecha: " + circuitoSeleccionado.getFecha());
-                System.out.println("Nombre GP: " + circuitoSeleccionado.getNombreGp());
-                System.out.println("Año: " + circuitoSeleccionado.getAnio());
             } else {
-                System.out.println("No se encontró un circuito con ese Id. Ingrese un Id válido por favor.");
+                System.out.println("No se encontró un circuito con ese Id.");
             }
         }
     }
 
+    // Muestra carreras y sus resultados
     private void mostrarCarreras(int anio) {
         System.out.println("\nLISTADO DE CARRERAS - TEMPORADA " + anio);
         List<Carrera> carreras = carreraDAO.obtenerCarrerasPorTemporada(anio);
@@ -185,21 +176,15 @@ public class TemporadaService {
         carreras.forEach(System.out::println);
 
         while (true) {
-            int idSeleccionado = Consola.leerEntero("\nIngrese el Id de la carrera para ver su detalle o 0 para regresar: ");
-
-            if (idSeleccionado == 0) {
-                break;
-            }
+            int idSeleccionado = Consola.leerEntero("\nIngrese el Id de la carrera o 0 para regresar: ");
+            if (idSeleccionado == 0) break;
 
             Carrera carreraSeleccionada = carreraDAO.obtenerCarrera(idSeleccionado, anio);
             if (carreraSeleccionada != null) {
                 System.out.println("\n--- DETALLES DE LA CARRERA ---");
-                System.out.println("ID: " + carreraSeleccionada.getId());
-                System.out.println("Nombre GP: " + carreraSeleccionada.getNombreGp());
+                System.out.println("Gran Premio: " + carreraSeleccionada.getNombreGp());
                 System.out.println("Circuito: " + carreraSeleccionada.getCircuito());
                 System.out.println("Fecha: " + carreraSeleccionada.getFecha());
-                System.out.println("Número de Vueltas: " + carreraSeleccionada.getNumVueltas());
-                System.out.println("\nRESULTADOS DE LA CARRERA:");
                 carreraDAO.mostrarResultadosCarrera(idSeleccionado);
             } else {
                 System.out.println("No se encontró una carrera con ese ID.");
@@ -207,52 +192,118 @@ public class TemporadaService {
         }
     }
 
-
+    // Muestra la tabla de posiciones de pilotos
     private void mostrarTablaPilotos(int anio) {
-        System.out.println("\n \uD83C\uDFC6 TABLA DE POSICIONES DE PILOTOS - TEMPORADA " + anio);
+        System.out.println("\n🏆 TABLA DE POSICIONES DE PILOTOS - " + anio);
         List<PosicionPiloto> posicionPilotos = posicionPilotoDAO.obtenerPosicionesPilotosTemporada(anio);
 
         if (posicionPilotos.isEmpty()) {
-            System.out.println("No se encontraron las posiciones.");
+            System.out.println("No se encontraron posiciones.");
             return;
         }
 
         posicionPilotos.forEach(System.out::println);
-
-        while (true) {
-            int idSeleccionado = Consola.leerEntero("\nIngrese 0 para regresar: ");
-
-            if (idSeleccionado == 0) {
-                break;
-            } else {
-                System.out.println("Ingrese una opción válida.");
-            }
-        }
+        Consola.leerEntero("\nIngrese 0 para regresar: ");
     }
 
+    // Muestra la tabla de posiciones de equipos
     private void mostrarTablaEquipos(int anio) {
-        System.out.println("\n \uD83C\uDFC6 TABLA DE POSICIONES DE EQUIPOS - TEMPORADA " + anio);
+        System.out.println("\n🏆 TABLA DE POSICIONES DE EQUIPOS - " + anio);
         List<PosicionEquipo> posicionEquipos = posicionEquipoDAO.obtenerPosicionesEquiposTemporada(anio);
 
         if (posicionEquipos.isEmpty()) {
-            System.out.println("No se encontraron las posiciones.");
+            System.out.println("No se encontraron posiciones.");
             return;
         }
 
         posicionEquipos.forEach(System.out::println);
-
-        while (true) {
-            int idSeleccionado = Consola.leerEntero("\nIngrese 0 para regresar: ");
-
-            if (idSeleccionado == 0) {
-                break;
-            } else {
-                System.out.println("Ingrese una opción válida.");
-            }
-        }
+        Consola.leerEntero("\nIngrese 0 para regresar: ");
     }
 
+    // Permite ingresar los resultados de una carrera de la temporada 2025
     private void ingresarResultadosCarrera() {
-        System.out.println("Ingresar resultados de carrera 2025");
+        Scanner sc = new Scanner(System.in);
+        System.out.println("\nIngresar resultados de carrera 2025\n");
+
+        // Pide el nombre del Gran Premio
+        System.out.println("Escriba el nombre de la carrera a simular:");
+        String granPremio = sc.nextLine().trim();
+        Carrera carrera = carreraDAO.obtenerCarreraPorNombre(granPremio, 2025);
+
+        // Asigna los puntos según la posición
+        Map<Integer, Integer> puntos = new HashMap<>();
+        puntos.put(1, 25);
+        puntos.put(2, 18);
+        puntos.put(3, 15);
+        puntos.put(4, 12);
+        puntos.put(5, 10);
+        puntos.put(6, 8);
+        puntos.put(7, 6);
+        puntos.put(8, 4);
+        puntos.put(9, 2);
+        puntos.put(10, 1);
+
+        List<ResultadoCarrera> listaResultados = new ArrayList<>();
+
+        // Se piden los resultados de 20 pilotos
+        for (int i = 1; i <= 20; i++) {
+            System.out.println("\nPiloto #" + i);
+            System.out.print("Digite el nombre del piloto: ");
+            String nombre = sc.nextLine().trim();
+
+            // Busca el piloto en la BD
+            Piloto piloto = pilotoDAO.obtenerPilotoPorNombre(nombre, 2025);
+
+            System.out.print("Ingrese la posición final: ");
+            int posicion = sc.nextInt();
+            sc.nextLine(); // limpiar buffer
+
+            // Verifica que la posición no esté repetida
+            boolean ocupada = listaResultados.stream().anyMatch(r -> r.getPosicion_final() == posicion);
+            if (ocupada) {
+                System.out.println("Esa posición ya fue asignada. Intenta de nuevo.");
+                i--;
+                continue;
+            }
+
+            System.out.print("Estado (terminado/descalificado): ");
+            String estado = sc.nextLine().trim();
+
+            int idTemp = pilotoTemporadaDAO.obtenerIdPilotoTemporadaPorNombre(nombre, 2025);
+            int puntosGanados = puntos.getOrDefault(posicion, 0);
+
+            // Crea y guarda el resultado
+            ResultadoCarrera resultado = new ResultadoCarrera();
+            resultado.setId_carrera(carrera.getId());
+            resultado.setId_piloto_temporada(idTemp);
+            resultado.setEstado(estado);
+            resultado.setPosicion_final(posicion);
+            resultado.setPuntosObtenidos(puntosGanados);
+
+            if (resultadoCarreraDAO.existeResultado(idTemp, carrera.getId())) {
+                System.out.println("Ese piloto ya tiene resultado en esta carrera.");
+                continue;
+            }
+
+            // Si quedó entre los 3 primeros, se guarda y se cuentan victorias
+            if (posicion <= 3) {
+                resultadoCarreraDAO.InsertarResultadosCarrera(resultado);
+                if (posicion == 1) pilotoTemporadaDAO.incrementarVictorias(idTemp);
+            }
+
+            pilotoTemporadaDAO.actualizarPuntosTotales(idTemp, puntosGanados);
+            listaResultados.add(resultado);
+        }
+
+        // Muestra los resultados ingresados
+        for (ResultadoCarrera r : listaResultados) {
+            int idPiloto = pilotoTemporadaDAO.obtenerIdPilotoPorIdPilotoTemporada(r.getId_piloto_temporada());
+            Piloto p = pilotoDAO.obtenerPiloto(idPiloto, 2025);
+            Carrera c = carreraDAO.obtenerCarrera(r.getId_carrera(), 2025);
+
+            System.out.printf("%s | %s %s | Posición: %d | Puntos: %d | Estado: %s%n",
+                    c.getNombreGp(), p.getNombre(), p.getApellido(),
+                    r.getPosicion_final(), r.getPuntosObtenidos(), r.getEstado());
+        }
     }
 }

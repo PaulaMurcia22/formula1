@@ -23,6 +23,16 @@ public class Piloto {
         this.victorias = victorias;
     }
 
+    public Piloto(int id, String nombre, String apellido, String nacionalidad, String equipo, int numero, int anio) {
+        this.id = id;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.nacionalidad = nacionalidad;
+        this.equipo = equipo;
+        this.numero = numero;
+        this.anio = anio;
+    }
+
     public Piloto(int id, String nombre, String apellido, String equipo) {
         this.id = id;
         this.nombre = nombre;

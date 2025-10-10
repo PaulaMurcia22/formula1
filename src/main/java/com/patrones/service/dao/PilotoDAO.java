@@ -98,5 +98,59 @@ public class PilotoDAO {
 
         return piloto;
     }
+    public Piloto obtenerPilotoPorNombre(String nombrePiloto, int anio) {
+        Piloto piloto = null; // Variable donde se guardará el piloto encontrado
+
+        // Consulta SQL para obtener los datos del piloto según su nombre y año de temporada
+        String sql = """
+        SELECT
+            p.id_piloto,
+            p.nombre,
+            p.apellido,
+            p.nacionalidad,
+            p.numero,
+            e.nombre AS nombre_equipo,
+            t.anio
+        FROM piloto p
+        JOIN piloto_temporada pt ON p.id_piloto = pt.id_piloto
+        JOIN equipo e ON pt.id_equipo = e.id_equipo
+        JOIN temporada t ON pt.id_temporada = t.id_temporada
+        WHERE LOWER(p.nombre) = LOWER(?)
+        AND t.anio = ?;
+    """;
+
+        try (Connection conn = ConnectionBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            // Se asignan los parámetros de búsqueda
+            stmt.setString(1, nombrePiloto);
+            stmt.setInt(2, anio);
+
+            // Ejecuta la consulta
+            ResultSet rs = stmt.executeQuery();
+
+            // Si el piloto existe, se crea el objeto con sus datos
+            if (rs.next()) {
+                piloto = new Piloto(
+                        rs.getInt("id_piloto"),
+                        rs.getString("nombre"),
+                        rs.getString("apellido"),
+                        rs.getString("nacionalidad"),
+                        rs.getString("nombre_equipo"),
+                        rs.getInt("numero"),
+                        rs.getInt("anio")
+                );
+            }
+
+        } catch (SQLException e) {
+            // Si ocurre un error en la conexión o consulta, se muestra el mensaje
+            System.err.println("Ocurrió un error al obtener el piloto por nombre: " + e.getMessage());
+        }
+
+        // Retorna el piloto encontrado o null si no existe
+        return piloto;
+    }
+
+
 
 }

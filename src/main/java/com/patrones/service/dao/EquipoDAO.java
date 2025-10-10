@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EquipoDAO {
+
+    // Obtiene la lista de equipos con sus pilotos en una temporada específica
     public List<Equipo> obtenerEquiposPorTemporada(int anio) {
         List<Equipo> equipos = new ArrayList<>();
 
@@ -31,9 +33,11 @@ public class EquipoDAO {
         try (Connection conn = ConnectionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            // Asigna el año como parámetro de búsqueda
             stmt.setInt(1, anio);
             ResultSet rs = stmt.executeQuery();
 
+            // Recorre los resultados y crea objetos Equipo
             while (rs.next()) {
                 Equipo equipo = new Equipo(
                         rs.getInt("id_equipo"),
@@ -44,12 +48,15 @@ public class EquipoDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("Ocurrio un error al obtener los equipos: " + e.getMessage());
+            // Si ocurre un error en la consulta o conexión
+            System.err.println("Ocurrió un error al obtener los equipos: " + e.getMessage());
         }
 
+        // Devuelve la lista de equipos encontrados
         return equipos;
     }
 
+    // Obtiene la información detallada de un equipo según su ID y año
     public Equipo obtenerEquipo(int idEquipo, int anio) {
         Equipo equipo = null;
 
@@ -75,10 +82,12 @@ public class EquipoDAO {
         try (Connection conn = ConnectionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            // Se asignan los parámetros de búsqueda
             stmt.setInt(1, idEquipo);
             stmt.setInt(2, anio);
             ResultSet rs = stmt.executeQuery();
 
+            // Si el equipo existe, se crea el objeto con su información
             if (rs.next()) {
                 equipo = new Equipo(
                         rs.getInt("id_equipo"),
@@ -93,9 +102,11 @@ public class EquipoDAO {
             }
 
         } catch (SQLException e) {
+            // Si ocurre un error al ejecutar la consulta
             System.err.println("Ocurrió un error al obtener el equipo por ID: " + e.getMessage());
         }
 
+        // Retorna el equipo encontrado o null si no existe
         return equipo;
     }
 

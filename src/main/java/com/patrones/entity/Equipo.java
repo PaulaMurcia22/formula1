@@ -39,7 +39,7 @@ public class Equipo {
 
     @Override
     public String toString() {
-        return String.format("%d - %s | Pilotos: %s",
+        return String.format("%d - %s | Equipos: %s",
                 id, nombre, pilotos);
     }
 }
