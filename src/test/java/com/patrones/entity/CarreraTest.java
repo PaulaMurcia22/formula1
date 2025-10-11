@@ -1,46 +1,53 @@
-package com.patrones.entity;
+package com.patrones.service.dao;
 
 import com.patrones.entity.Carrera;
 import org.junit.Test;
+import java.util.List;
 import static org.junit.Assert.*;
+
 
 public class CarreraTest {
 
-    @Test
-    public void testCrearCarrera() {
-        // Datos reales de la base de datos: id=20 corresponde al GP de México 2024
-        Carrera carrera = new Carrera(20, "Gran Premio de México 2024", "2024-10-27");
-        carrera.setCircuito("Autódromo Hermanos Rodríguez");
+    private final CarreraDAO carreraDAO = new CarreraDAO();
 
-        assertEquals(20, carrera.getId());
-        assertEquals("Gran Premio de México 2024", carrera.getNombreGp());
-        assertEquals("Autódromo Hermanos Rodríguez", carrera.getCircuito());
+
+    @Test // Validar que se obtenga la lista de carreras desde la base de datos
+    public void testObtenerCarrerasPorTemporada() {
+        List<Carrera> carreras = carreraDAO.obtenerCarrerasPorTemporada(2024);
+        assertNotNull("La lista de carreras no debe ser nula", carreras);
+        assertTrue("Debe haber al menos una carrera en la temporada 2024", !carreras.isEmpty());
+
+        // Se imprime para verificar visualmente los resultados
+        carreras.forEach(c -> System.out.println(c.toString()));
     }
 
-    @Test
-    public void testSetNombre() {
-        // Datos reales: id=10 corresponde al GP de España 2024
-        Carrera carrera = new Carrera(10, "Gran Premio de España 2024", "2024-06-23");
-        carrera.setNombreGp("Gran Premio de Barcelona-Cataluña 2024");
+    @Test //valida que se obtenga una carrera consultando por su id
+    public void testObtenerCarreraPorId() {
+        Carrera carrera = carreraDAO.obtenerCarrera(1, 2024);
+        assertNotNull("La carrera con ID 1 debe existir para el año 2024", carrera);
 
-        assertEquals("Gran Premio de Barcelona-Cataluña 2024", carrera.getNombreGp());
+        System.out.println("Carrera encontrada: " + carrera);
+        assertEquals(1, carrera.getId());
+        assertEquals(2024, carrera.getAnio());
     }
 
-    @Test
-    public void testCambiarFecha() {
-        // Datos reales: id=3 corresponde al GP de Australia 2024
-        Carrera carrera = new Carrera(3, "Gran Premio de Australia 2024", "2024-03-24");
-        carrera.setFecha("2024-03-25");
 
-        assertEquals("2024-03-25", carrera.getFecha());
+    @Test //valida que se obtenga una carrera consultando por su nombre
+    public void testObtenerCarreraPorNombre() {
+        Carrera carrera = carreraDAO.obtenerCarreraPorNombre("Gran Premio de México", 2024);
+        assertNotNull("Debe existir una carrera llamada 'Gran Premio de México' en 2024", carrera);
+
+        System.out.println("Carrera encontrada por nombre: " + carrera.getNombreGp());
+        assertTrue(carrera.getNombreGp().toLowerCase().contains("méxico"));
     }
 
-    @Test
-    public void testCircuitoAsociado() {
-        // Datos reales: id=1 corresponde al GP de Bahréin 2024
-        Carrera carrera = new Carrera(1, "Gran Premio de Bahréin 2024", "2024-03-02");
-        carrera.setCircuito("Sakhir International Circuit");
 
-        assertEquals("Sakhir International Circuit", carrera.getCircuito());
+    @Test //valida la visualizacion de resultados de una carrera
+    public void testMostrarResultadosCarrera() {
+        try {
+            carreraDAO.mostrarResultadosCarrera(1);
+        } catch (Exception e) {
+            fail("No se debería lanzar excepción al mostrar los resultados de una carrera: " + e.getMessage());
+        }
     }
 }
