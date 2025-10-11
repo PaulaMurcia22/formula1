@@ -18,6 +18,7 @@ public class Carrera {
         this.numVueltas = numVueltas;
         this.anio = anio;
     }
+
     //getters
     public int getId() { return id; }
     public String getNombreGp() { return nombreGp; }
@@ -26,18 +27,6 @@ public class Carrera {
     public int getNumVueltas() { return numVueltas; }
     public int getAnio() { return anio; }
 
-    // Setters
-    public void setNombreGp(String nombreGp) {
-        this.nombreGp = nombreGp;
-    }
-
-    public void setFecha(String fecha) {
-        this.fecha = fecha;
-    }
-
-    public void setCircuito(String circuito) {
-        this.circuito = circuito;
-    }
 
     //devuelve la visualización de la información de la carrera para la lista
     @Override
