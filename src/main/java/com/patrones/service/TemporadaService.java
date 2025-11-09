@@ -4,6 +4,9 @@ import com.patrones.entity.*;
 import com.patrones.service.dao.*;
 import com.patrones.utils.Consola;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.*;
 
 public class TemporadaService {
@@ -33,7 +36,8 @@ public class TemporadaService {
             // Solo en la temporada 2025 se puede ingresar resultados
             if (anio == 2025) {
                 System.out.println("7. Ingresar resultados carrera");
-                System.out.println("8. Regresar al menú principal");
+                System.out.println("8. Simular proximas carreras");
+                System.out.println("9. Regresar al menú principal");
             } else {
                 System.out.println("7. Regresar al menú principal");
             }
@@ -66,7 +70,8 @@ public class TemporadaService {
                 case 5 -> mostrarTablaPilotos(anio);
                 case 6 -> mostrarTablaEquipos(anio);
                 case 7 -> ingresarResultadosCarrera();
-                case 8 -> { return true; } // salir
+                case 8 -> simularCarrerasPostCongelacion();
+                case 9 -> { return true; } // salir
                 default -> System.out.println("La opción no es válida para la temporada 2025.");
             }
         }
@@ -304,6 +309,143 @@ public class TemporadaService {
             System.out.printf("%s | %s %s | Posición: %d | Puntos: %d | Estado: %s%n",
                     c.getNombreGp(), p.getNombre(), p.getApellido(),
                     r.getPosicion_final(), r.getPuntosObtenidos(), r.getEstado());
+        }
+    }
+
+
+    private void simularCarrerasPostCongelacion() {
+        System.out.println("SIMULACIÓN DE CARRERAS POST-CONGELACIÓN 2025");
+
+        List<Carrera> carrerasPostCongelacion = carreraDAO.obtenerCarrerasPostCongelacion(2025);
+        if (carrerasPostCongelacion.isEmpty()) {
+            System.out.println("No hay carreras pendientes posteriores a la fecha de congelación.");
+            return;
+        }
+
+        System.out.println("Se simularan las proximas " + carrerasPostCongelacion.size() + " carreras");
+        int carrerasASimular = Math.min(carrerasPostCongelacion.size(), 2);
+
+        // Lista para guardar los resultados de cada carrera
+        Map<Carrera, List<Piloto>> resultadosPorCarrera = new HashMap<>();
+
+        for (int i = 0; i < carrerasASimular; i++) {
+            Carrera carrera = carrerasPostCongelacion.get(i);
+            System.out.println("\nSimulación de la carrera: " + carrera.getNombreGp());
+            List<Piloto> pilotos = pilotoDAO.obtenerPilotosPorTemporada(2025);
+
+            // Se mezclan los pilotos y se guarda ese resultado
+            List<Piloto> pilotosMezclados = new ArrayList<>(pilotos);
+            Collections.shuffle(pilotosMezclados);
+
+            resultadosPorCarrera.put(carrera, pilotosMezclados);
+
+            // Se muestra el podio
+            String[] podio = {"🥇", "🥈", "🥉"};
+            for (int j = 0; j < 3; j++) {
+                Piloto piloto = pilotosMezclados.get(j);
+                System.out.println(podio[j] + " " + piloto.getNombre() + " " + piloto.getApellido());
+            }
+
+            // Se muestran las posiciones del 4 al 10
+            for (int j = 3; j < 10 && j < pilotosMezclados.size(); j++) {
+                Piloto piloto = pilotosMezclados.get(j);
+                System.out.println("🔝 " + piloto.getNombre() + " " + piloto.getApellido());
+            }
+
+            // PSe muestran las posiciones del 11 al 20
+            for (int j = 10; j < pilotosMezclados.size(); j++) {
+                Piloto piloto = pilotosMezclados.get(j);
+                System.out.println("🔻 " + piloto.getNombre() + " " + piloto.getApellido());
+            }
+        }
+
+        // Pregunta si se desea guardar esos resultados
+        System.out.println("¿DESEAS GUARDAR ESTOS RESULTADOS?");
+
+        while (true) {
+            System.out.println("1. Si, guardar resultados");
+            System.out.println("2. No, volver al menú");
+
+            int opcion = Consola.leerEntero("Selecciona una opción: ");
+
+            switch (opcion) {
+                case 1 -> {
+                    guardarResultadosSimulados(resultadosPorCarrera);
+                    return;
+                }
+                case 2 -> {
+                    System.out.println("Se descartaron los resultados");
+                    return;
+                }
+                default -> System.out.println("La opcion no es valida");
+            }
+        }
+    }
+
+    private void guardarResultadosSimulados(Map<Carrera, List<Piloto>> resultadosPorCarrera) {
+        System.out.println("Se guardaran los resultados");
+
+        Map<Integer, Integer> puntosF1 = Map.of(
+                1, 25, 2, 18, 3, 15, 4, 12, 5, 10,
+                6, 8, 7, 6, 8, 4, 9, 2, 10, 1
+        );
+
+        int carrerasGuardadas = 0;
+
+        for (Map.Entry<Carrera, List<Piloto>> entry : resultadosPorCarrera.entrySet()) {
+            Carrera carrera = entry.getKey();
+            List<Piloto> pilotosMezclados = entry.getValue();
+
+            // se actualiza el estado de pendiente a terminado de la carrera
+            carreraDAO.actualizarEstadoPendienteATerminado(carrera.getId());
+
+            for (int posicion = 1; posicion <= pilotosMezclados.size(); posicion++) {
+                Piloto piloto = pilotosMezclados.get(posicion - 1);
+
+                try {
+                    int idPilotoTemporada = pilotoTemporadaDAO.obtenerIdPilotoTemporadaPorNombre(
+                            piloto.getNombre(), 2025
+                    );
+
+                    String estado = new Random().nextDouble() < 0.85 ? "terminado" : "abandono";
+                    int puntos = puntosF1.getOrDefault(posicion, 0);
+
+                    eliminarResultadoExistente(idPilotoTemporada, carrera.getId());
+
+                    ResultadoCarrera resultado = new ResultadoCarrera();
+                    resultado.setId_carrera(carrera.getId());
+                    resultado.setId_piloto_temporada(idPilotoTemporada);
+                    resultado.setPosicion_final(posicion);
+                    resultado.setPuntosObtenidos(puntos);
+                    resultado.setEstado(estado);
+
+                    resultadoCarreraDAO.InsertarResultadosCarrera(resultado);
+                    pilotoTemporadaDAO.actualizarPuntosTotales(idPilotoTemporada, puntos);
+
+                    if (posicion == 1) {
+                        pilotoTemporadaDAO.incrementarVictorias(idPilotoTemporada);
+                    }
+
+                } catch (Exception e) {
+                    System.err.println("Error al guardar los resultados del piloto " + piloto.getNombre() + ": " + e.getMessage());
+                }
+            }
+            carrerasGuardadas++;
+            System.out.println("Se guardo los resultados de la carrera " + carrera.getNombreGp() + " correctamente");
+        }
+    }
+    private void eliminarResultadoExistente(int idPilotoTemporada, int idCarrera) {
+        String sql = "DELETE FROM resultado_carrera WHERE id_piloto_temporada = ? AND id_carrera = ?";
+
+        try (Connection conn = ConnectionBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idPilotoTemporada);
+            stmt.setInt(2, idCarrera);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println("Error al eliminar resultado existente: " + e.getMessage());
         }
     }
 }

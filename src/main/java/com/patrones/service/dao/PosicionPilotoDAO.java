@@ -57,15 +57,15 @@ public class PosicionPilotoDAO {
                 // Determina el ícono o "categoría" según la posición del piloto
                 String categoria;
                 if (posicion == 1) {
-                    categoria = "\uD83E\uDD47"; // 🥇 Primer lugar
+                    categoria = "\uD83E\uDD47"; // Primer lugar
                 } else if (posicion == 2) {
-                    categoria = "\uD83E\uDD48"; // 🥈 Segundo lugar
+                    categoria = "\uD83E\uDD48"; // Segundo lugar
                 } else if (posicion == 3) {
-                    categoria = "\uD83E\uDD49"; // 🥉 Tercer lugar
+                    categoria = "\uD83E\uDD49"; // Tercer lugar
                 } else if (posicion <= 10) {
-                    categoria = "\uD83D\uDD1D"; // 🔝 Top 10
+                    categoria = "\uD83D\uDD1D"; // Top 10
                 } else {
-                    categoria = "\uD83D\uDD3B"; // 🔻 Resto de posiciones
+                    categoria = "\uD83D\uDD3B"; // Resto de posiciones
                 }
 
                 // Crea un objeto con la información del piloto
