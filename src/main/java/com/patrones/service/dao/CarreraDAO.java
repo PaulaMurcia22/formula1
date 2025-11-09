@@ -199,4 +199,76 @@ public class CarreraDAO {
 
         return carrera;
     }
+
+    public List<Carrera> obtenerCarrerasPostCongelacion(int anio) {
+        List<Carrera> carreras = new ArrayList<>();
+
+        String sql = """
+        SELECT 
+            c.id_carrera, 
+            c.nombre_gp, 
+            c.fecha, 
+            c.id_circuito,
+            cir.nombre as nombre_circuito, 
+            c.num_vueltas, 
+            t.anio
+        FROM carrera c
+        JOIN circuito cir ON c.id_circuito = cir.id_circuito
+        JOIN temporada t ON c.id_temporada = t.id_temporada
+        WHERE t.anio = ?
+        AND c.id_carrera IN (
+            SELECT DISTINCT 
+                id_carrera
+            FROM resultado_carrera
+            WHERE estado = 'pendiente'
+        )
+        ORDER BY c.fecha ASC
+        LIMIT 2;
+        """;
+
+        try (Connection conn = ConnectionBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, anio);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Carrera carrera = new Carrera(
+                        rs.getInt("id_carrera"),
+                        rs.getString("nombre_gp"),
+                        rs.getString("fecha"),
+                        rs.getString("nombre_circuito"),
+                        rs.getInt("num_vueltas"),
+                        rs.getInt("anio")
+                );
+                carreras.add(carrera);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al obtener las carreras: " + e.getMessage());
+        }
+
+        return carreras;
+    }
+
+    public void actualizarEstadoPendienteATerminado(int idCarrera) {
+        String sql = """
+            UPDATE resultado_carrera 
+            SET estado = 'terminado'
+            WHERE id_carrera = ? 
+            AND estado = 'pendiente';
+        """;
+
+        try (Connection conn = ConnectionBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idCarrera);
+            int filasActualizadas = stmt.executeUpdate();
+
+            System.out.println("Se actualizaron " + filasActualizadas + " registros de 'pendiente' a 'terminado' para la carrera con ID: " + idCarrera);
+
+        } catch (SQLException e) {
+            System.err.println("Error al actualizar estado pendiente a terminado: " + e.getMessage());
+        }
+    }
 }

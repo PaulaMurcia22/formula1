@@ -61,9 +61,9 @@ public class PilotoTemporadaDAO {
 
             // Verifica si se actualizó correctamente
             if (filas > 0) {
-                System.out.println("✅ Puntos actualizados correctamente en piloto_temporada.");
+                System.out.println("Puntos actualizados correctamente en piloto_temporada.");
             } else {
-                System.out.println("⚠️ No se encontró el piloto_temporada con ese ID.");
+                System.out.println("No se encontró el piloto_temporada con ese ID.");
             }
 
         } catch (SQLException e) {

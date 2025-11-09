@@ -30,7 +30,7 @@ public class ResultadoCarreraDAO {
 
             // Ejecuta la instrucción INSERT
             stmt.executeUpdate();
-            System.out.println("✅ Resultado de carrera insertado correctamente.");
+            System.out.println("Resultado de carrera insertado correctamente.");
 
         } catch (SQLException e) {
             // Si ocurre un error en la base de datos, se muestra el mensaje
