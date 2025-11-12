@@ -1,14 +1,21 @@
 package com.patrones.service.dao;
 
+import com.patrones.Interface.DAO.ICarreraDAO;
+import com.patrones.Interface.DAO.IConectionProvider;
 import com.patrones.entity.Carrera;
-import com.patrones.service.ConnectionBD;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CarreraDAO {
+public class CarreraDAO implements ICarreraDAO {
+    private final IConectionProvider conexionBD;
 
+    public CarreraDAO(IConectionProvider connectionProvider) {
+        this.conexionBD = connectionProvider;
+    }
     // Obtiene la lista de carreras de una temporada específica
+    @Override
     public List<Carrera> obtenerCarrerasPorTemporada(int anio) {
         List<Carrera> carreras = new ArrayList<>();
 
@@ -27,7 +34,7 @@ public class CarreraDAO {
             ORDER BY c.fecha ASC;
         """;
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             // Se pasa el año como parámetro
@@ -55,6 +62,7 @@ public class CarreraDAO {
     }
 
     // Obtiene una carrera específica por su ID y año
+    @Override
     public Carrera obtenerCarrera(int idCarrera, int anio) {
         Carrera carrera = null;
 
@@ -72,7 +80,7 @@ public class CarreraDAO {
             WHERE c.id_carrera = ? AND t.anio = ?;
         """;
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             // Se establecen los parámetros de búsqueda
@@ -100,6 +108,7 @@ public class CarreraDAO {
     }
 
     // Muestra los resultados de una carrera con nombre, equipo, posición y puntos
+    @Override
     public void mostrarResultadosCarrera(int idCarrera) {
         String sql = """
             SELECT 
@@ -121,7 +130,7 @@ public class CarreraDAO {
             ORDER BY rc.posicion_final ASC;
         """;
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             // Se pasa el ID de la carrera
@@ -154,6 +163,7 @@ public class CarreraDAO {
     }
 
     // Obtiene una carrera por su nombre y año de temporada
+    @Override
     public Carrera obtenerCarreraPorNombre(String nombreGp, int anio) {
         Carrera carrera = null;
 
@@ -172,7 +182,7 @@ public class CarreraDAO {
         AND t.anio = ?;
         """;
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             // Se establecen los parámetros de búsqueda
@@ -200,6 +210,7 @@ public class CarreraDAO {
         return carrera;
     }
 
+    @Override
     public List<Carrera> obtenerCarrerasPostCongelacion(int anio) {
         List<Carrera> carreras = new ArrayList<>();
 
@@ -226,7 +237,7 @@ public class CarreraDAO {
         LIMIT 2;
         """;
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, anio);
@@ -250,7 +261,7 @@ public class CarreraDAO {
 
         return carreras;
     }
-
+    @Override
     public void actualizarEstadoPendienteATerminado(int idCarrera) {
         String sql = """
             UPDATE resultado_carrera 
@@ -259,7 +270,7 @@ public class CarreraDAO {
             AND estado = 'pendiente';
         """;
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, idCarrera);
@@ -269,6 +280,21 @@ public class CarreraDAO {
 
         } catch (SQLException e) {
             System.err.println("Error al actualizar estado pendiente a terminado: " + e.getMessage());
+        }
+    }
+    @Override
+    public void eliminarResultadoExistente(int idPilotoTemporada, int idCarrera) {
+        String sql = "DELETE FROM resultado_carrera WHERE id_piloto_temporada = ? AND id_carrera = ?";
+
+        try (Connection conn = conexionBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idPilotoTemporada);
+            stmt.setInt(2, idCarrera);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println("Error al eliminar resultado existente: " + e.getMessage());
         }
     }
 }

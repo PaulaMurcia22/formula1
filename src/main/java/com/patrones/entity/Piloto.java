@@ -57,8 +57,7 @@ public class Piloto {
 
 
     //devuelve la visualización de la información del piloto para la lista
-    @Override
-    public String toString() {
+    public String toString(){
         return String.format("%d - %s %s | Equipo: %s",
                 id, nombre, apellido, equipo);
     }

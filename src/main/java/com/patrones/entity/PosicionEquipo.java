@@ -39,8 +39,7 @@ public class PosicionEquipo {
     }
 
     //devuelve la visualización de la información de PosicionEquipo para la lista
-    @Override
-    public String toString() {
+    public String toString(){
         return String.format(
                 "%s | %s | Pilotos: %s | Puntos: %d",
                 categoriaPosicion, nombre, pilotos, puntosTotales

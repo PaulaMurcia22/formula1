@@ -41,7 +41,6 @@ public class Equipo {
     public int getVictorias() { return victorias; }
 
     //devuelve la visualización de la información del equipo para la lista
-    @Override
     public String toString() {
         return String.format("%d - %s | Pilotos: %s",
                 id, nombre, pilotos);

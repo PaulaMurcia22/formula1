@@ -2,7 +2,7 @@ package com.patrones.entity;
 
 import java.util.Date;
 
-public class Circuito {
+public class Circuito{
     //atributos del circuito
     private int id;
     private String nombre;
@@ -44,7 +44,6 @@ public class Circuito {
     public int getAnio() { return anio; }
 
     //devuelve la visualización de la información del circuito para la lista
-    @Override
     public String toString() {
         return String.format("%d - %s | Pais: %s) | Fecha: %s",
                 id, nombre, pais, fecha);

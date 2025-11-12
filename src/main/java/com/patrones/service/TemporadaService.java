@@ -1,85 +1,52 @@
 package com.patrones.service;
 
+import com.patrones.Interface.DAO.*;
+import com.patrones.Interface.Ipuntacion;
+import com.patrones.Interface.ItemporadaService;
 import com.patrones.entity.*;
-import com.patrones.service.dao.*;
 import com.patrones.utils.Consola;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+
 import java.util.*;
 
-public class TemporadaService {
+public class TemporadaService implements ItemporadaService {
+
 
     // Objetos DAO para acceder a la base de datos de pilotos, equipos, carreras, etc.
-    private PilotoDAO pilotoDAO = new PilotoDAO();
-    private EquipoDAO equipoDAO = new EquipoDAO();
-    private CircuitoDAO circuitoDAO = new CircuitoDAO();
-    private PosicionPilotoDAO posicionPilotoDAO = new PosicionPilotoDAO();
-    private PosicionEquipoDAO posicionEquipoDAO = new PosicionEquipoDAO();
-    private PilotoTemporadaDAO pilotoTemporadaDAO = new PilotoTemporadaDAO();
-    private CarreraDAO carreraDAO = new CarreraDAO();
-    private ResultadoCarreraDAO resultadoCarreraDAO = new ResultadoCarreraDAO();
-
+    private final IPilotoDAO pilotoDAO;
+    private final IEquipoDAO equipoDAO;
+    private final ICircuitoDAO circuitoDAO;
+    private final IPosicionPilotoDAO posicionPilotoDAO;
+    private final IPosicionEquipoDAO posicionEquipoDAO;
+    private final IPilotoTemporadaDAO pilotoTemporadaDAO;
+    private final ICarreraDAO carreraDAO;
+    private final IResultadoCarreraDAO resultadoCarreraDAO;
+    private final Ipuntacion sistemaPuntuacion
+            ;
     // Muestra el menú principal de una temporada
-    public void mostrarMenuTemporada(int anio) {
-        boolean salir = false;
-        while (!salir) {
-            System.out.println("TEMPORADA " + anio);
-            System.out.println("1. Ver información de Pilotos");
-            System.out.println("2. Ver información de Equipos");
-            System.out.println("3. Listado de Circuitos");
-            System.out.println("4. Listado de Carreras");
-            System.out.println("5. Tabla de posiciones de Pilotos");
-            System.out.println("6. Tabla de posiciones de Equipos");
-
-            // Solo en la temporada 2025 se puede ingresar resultados
-            if (anio == 2025) {
-                System.out.println("7. Ingresar resultados carrera");
-                System.out.println("8. Simular proximas carreras");
-                System.out.println("9. Regresar al menú principal");
-            } else {
-                System.out.println("7. Regresar al menú principal");
-            }
-
-            // Lee la opción que el usuario elija
-            int opcion = Consola.leerEntero("Selecciona una opción: ");
-            salir = manejarOpcion(anio, opcion);
-        }
+    public TemporadaService (IPilotoDAO pilotoDAO,
+                             IEquipoDAO equipoDAO,
+                             ICircuitoDAO circuitoDAO,
+                             IPosicionPilotoDAO posicionPilotoDAO,
+                             IPosicionEquipoDAO posicionEquipoDAO,
+                             IPilotoTemporadaDAO pilotoTemporadaDAO,
+                             ICarreraDAO carreraDAO,
+                             IResultadoCarreraDAO resultadoCarreraDAO,
+                             Ipuntacion sistemaPuntuacion)
+    {
+        this.pilotoDAO = pilotoDAO;
+        this.equipoDAO = equipoDAO;
+        this.circuitoDAO = circuitoDAO;
+        this.posicionPilotoDAO = posicionPilotoDAO;
+        this.posicionEquipoDAO = posicionEquipoDAO;
+        this.pilotoTemporadaDAO = pilotoTemporadaDAO;
+        this.carreraDAO = carreraDAO;
+        this.resultadoCarreraDAO = resultadoCarreraDAO;
+        this.sistemaPuntuacion = sistemaPuntuacion;
     }
-
-    // Maneja lo que hace el menú según la temporada
-    private boolean manejarOpcion(int anio, int opcion) {
-        if (anio == 2024) {
-            switch (opcion) {
-                case 1 -> mostrarPilotos(anio);
-                case 2 -> mostrarEquipos(anio);
-                case 3 -> mostrarCircuitos(anio);
-                case 4 -> mostrarCarreras(anio);
-                case 5 -> mostrarTablaPilotos(anio);
-                case 6 -> mostrarTablaEquipos(anio);
-                case 7 -> { return true; } // salir
-                default -> System.out.println("La opción no es válida para la temporada 2024.");
-            }
-        } else if (anio == 2025) {
-            switch (opcion) {
-                case 1 -> mostrarPilotos(anio);
-                case 2 -> mostrarEquipos(anio);
-                case 3 -> mostrarCircuitos(anio);
-                case 4 -> mostrarCarreras(anio);
-                case 5 -> mostrarTablaPilotos(anio);
-                case 6 -> mostrarTablaEquipos(anio);
-                case 7 -> ingresarResultadosCarrera();
-                case 8 -> simularCarrerasPostCongelacion();
-                case 9 -> { return true; } // salir
-                default -> System.out.println("La opción no es válida para la temporada 2025.");
-            }
-        }
-        return false;
-    }
-
     // Muestra todos los pilotos y permite ver detalles de uno
-    private void mostrarPilotos(int anio) {
+    @Override
+    public void mostrarPilotos(int anio) {
         System.out.println("\nLISTADO DE PILOTOS - TEMPORADA " + anio);
         List<Piloto> pilotos = pilotoDAO.obtenerPilotosPorTemporada(anio);
 
@@ -109,7 +76,8 @@ public class TemporadaService {
     }
 
     // Muestra los equipos y permite ver detalles de uno
-    private void mostrarEquipos(int anio) {
+    @Override
+    public void mostrarEquipos(int anio) {
         System.out.println("\nLISTADO DE EQUIPOS - TEMPORADA " + anio);
         List<Equipo> equipos = equipoDAO.obtenerEquiposPorTemporada(anio);
 
@@ -139,7 +107,8 @@ public class TemporadaService {
     }
 
     // Muestra circuitos disponibles y permite ver sus detalles
-    private void mostrarCircuitos(int anio) {
+    @Override
+    public void mostrarCircuitos(int anio) {
         System.out.println("\nLISTADO DE CIRCUITOS - TEMPORADA " + anio);
         List<Circuito> circuitos = circuitoDAO.obtenerCircuitosPorTemporada(anio);
 
@@ -169,7 +138,8 @@ public class TemporadaService {
     }
 
     // Muestra carreras y sus resultados
-    private void mostrarCarreras(int anio) {
+    @Override
+    public void mostrarCarreras(int anio) {
         System.out.println("\nLISTADO DE CARRERAS - TEMPORADA " + anio);
         List<Carrera> carreras = carreraDAO.obtenerCarrerasPorTemporada(anio);
 
@@ -198,7 +168,8 @@ public class TemporadaService {
     }
 
     // Muestra la tabla de posiciones de pilotos
-    private void mostrarTablaPilotos(int anio) {
+    @Override
+    public void mostrarTablaPilotos(int anio) {
         System.out.println("\n🏆 TABLA DE POSICIONES DE PILOTOS - " + anio);
         List<PosicionPiloto> posicionPilotos = posicionPilotoDAO.obtenerPosicionesPilotosTemporada(anio);
 
@@ -212,7 +183,8 @@ public class TemporadaService {
     }
 
     // Muestra la tabla de posiciones de equipos
-    private void mostrarTablaEquipos(int anio) {
+    @Override
+    public void mostrarTablaEquipos(int anio) {
         System.out.println("\n🏆 TABLA DE POSICIONES DE EQUIPOS - " + anio);
         List<PosicionEquipo> posicionEquipos = posicionEquipoDAO.obtenerPosicionesEquiposTemporada(anio);
 
@@ -225,8 +197,12 @@ public class TemporadaService {
         Consola.leerEntero("\nIngrese 0 para regresar: ");
     }
 
+
+
+
     // Permite ingresar los resultados de una carrera de la temporada 2025
-    private void ingresarResultadosCarrera() {
+    @Override
+    public void ingresarResultadosCarrera() {
         Scanner sc = new Scanner(System.in);
         System.out.println("\nIngresar resultados de carrera 2025\n");
 
@@ -236,17 +212,7 @@ public class TemporadaService {
         Carrera carrera = carreraDAO.obtenerCarreraPorNombre(granPremio, 2025);
 
         // Asigna los puntos según la posición
-        Map<Integer, Integer> puntos = new HashMap<>();
-        puntos.put(1, 25);
-        puntos.put(2, 18);
-        puntos.put(3, 15);
-        puntos.put(4, 12);
-        puntos.put(5, 10);
-        puntos.put(6, 8);
-        puntos.put(7, 6);
-        puntos.put(8, 4);
-        puntos.put(9, 2);
-        puntos.put(10, 1);
+        Map<Integer, Integer> puntos = sistemaPuntuacion.puntuacion();
 
         List<ResultadoCarrera> listaResultados = new ArrayList<>();
 
@@ -257,7 +223,7 @@ public class TemporadaService {
             String nombre = sc.nextLine().trim();
 
             // Busca el piloto en la BD
-            Piloto piloto = pilotoDAO.obtenerPilotoPorNombre(nombre, 2025);
+            pilotoDAO.obtenerPilotoPorNombre(nombre, 2025);
 
             System.out.print("Ingrese la posición final: ");
             int posicion = sc.nextInt();
@@ -312,8 +278,8 @@ public class TemporadaService {
         }
     }
 
-
-    private void simularCarrerasPostCongelacion() {
+    @Override
+    public void simularCarrerasPostCongelacion() {
         System.out.println("SIMULACIÓN DE CARRERAS POST-CONGELACIÓN 2025");
 
         List<Carrera> carrerasPostCongelacion = carreraDAO.obtenerCarrerasPostCongelacion(2025);
@@ -382,13 +348,10 @@ public class TemporadaService {
         }
     }
 
-    private void guardarResultadosSimulados(Map<Carrera, List<Piloto>> resultadosPorCarrera) {
+    public void guardarResultadosSimulados(Map<Carrera, List<Piloto>> resultadosPorCarrera) {
         System.out.println("Se guardaran los resultados");
 
-        Map<Integer, Integer> puntosF1 = Map.of(
-                1, 25, 2, 18, 3, 15, 4, 12, 5, 10,
-                6, 8, 7, 6, 8, 4, 9, 2, 10, 1
-        );
+        Map<Integer, Integer> puntosF1 = sistemaPuntuacion.puntuacion();
 
         int carrerasGuardadas = 0;
 
@@ -396,7 +359,7 @@ public class TemporadaService {
             Carrera carrera = entry.getKey();
             List<Piloto> pilotosMezclados = entry.getValue();
 
-            // se actualiza el estado de pendiente a terminado de la carrera
+            // se actualiza el estado de pendiente terminado de la carrera
             carreraDAO.actualizarEstadoPendienteATerminado(carrera.getId());
 
             for (int posicion = 1; posicion <= pilotosMezclados.size(); posicion++) {
@@ -410,7 +373,7 @@ public class TemporadaService {
                     String estado = new Random().nextDouble() < 0.85 ? "terminado" : "abandono";
                     int puntos = puntosF1.getOrDefault(posicion, 0);
 
-                    eliminarResultadoExistente(idPilotoTemporada, carrera.getId());
+                    carreraDAO.eliminarResultadoExistente(idPilotoTemporada, carrera.getId());
 
                     ResultadoCarrera resultado = new ResultadoCarrera();
                     resultado.setId_carrera(carrera.getId());
@@ -434,18 +397,5 @@ public class TemporadaService {
             System.out.println("Se guardo los resultados de la carrera " + carrera.getNombreGp() + " correctamente");
         }
     }
-    private void eliminarResultadoExistente(int idPilotoTemporada, int idCarrera) {
-        String sql = "DELETE FROM resultado_carrera WHERE id_piloto_temporada = ? AND id_carrera = ?";
 
-        try (Connection conn = ConnectionBD.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, idPilotoTemporada);
-            stmt.setInt(2, idCarrera);
-            stmt.executeUpdate();
-
-        } catch (SQLException e) {
-            System.err.println("Error al eliminar resultado existente: " + e.getMessage());
-        }
-    }
 }

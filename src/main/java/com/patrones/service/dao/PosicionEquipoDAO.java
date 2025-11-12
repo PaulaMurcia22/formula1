@@ -1,5 +1,8 @@
 package com.patrones.service.dao;
 
+import com.patrones.Interface.DAO.IConectionProvider;
+import com.patrones.Interface.DAO.IEquipoDAO;
+import com.patrones.Interface.DAO.IPosicionEquipoDAO;
 import com.patrones.entity.PosicionEquipo;
 import com.patrones.service.ConnectionBD;
 
@@ -10,7 +13,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PosicionEquipoDAO {
+public class PosicionEquipoDAO implements IPosicionEquipoDAO {
+    private final IConectionProvider conexionBD;
+
+    public PosicionEquipoDAO (IConectionProvider conexionBD) {
+        this.conexionBD =conexionBD ;
+    }
+
+    @Override
     public List<PosicionEquipo> obtenerPosicionesEquiposTemporada(int anio) {
         // Lista donde se guardarán las posiciones de los equipos
         List<PosicionEquipo> posiciones = new ArrayList<>();
@@ -32,7 +42,7 @@ public class PosicionEquipoDAO {
     """;
 
         // try-with-resources para cerrar la conexión y el PreparedStatement automáticamente
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             // Se asigna el año de la temporada al parámetro de la consulta

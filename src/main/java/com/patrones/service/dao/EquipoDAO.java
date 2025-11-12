@@ -1,7 +1,8 @@
 package com.patrones.service.dao;
 
+import com.patrones.Interface.DAO.IConectionProvider;
+import com.patrones.Interface.DAO.IEquipoDAO;
 import com.patrones.entity.Equipo;
-import com.patrones.service.ConnectionBD;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,9 +11,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EquipoDAO {
+public class EquipoDAO implements IEquipoDAO {
+        public final IConectionProvider conexionBD;
+
+        public EquipoDAO (IConectionProvider conexionBD) {
+            this.conexionBD = conexionBD;
+        }
 
     // Obtiene la lista de equipos con sus pilotos en una temporada específica
+    @Override
     public List<Equipo> obtenerEquiposPorTemporada(int anio) {
         List<Equipo> equipos = new ArrayList<>();
 
@@ -30,7 +37,7 @@ public class EquipoDAO {
             ORDER BY e.id_equipo ASC;
         """;
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             // Asigna el año como parámetro de búsqueda
@@ -57,6 +64,7 @@ public class EquipoDAO {
     }
 
     // Obtiene la información detallada de un equipo según su ID y año
+    @Override
     public Equipo obtenerEquipo(int idEquipo, int anio) {
         Equipo equipo = null;
 
@@ -79,7 +87,7 @@ public class EquipoDAO {
         GROUP BY e.id_equipo, e.nombre, e.pais, e.motor, t.anio;
     """;
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             // Se asignan los parámetros de búsqueda

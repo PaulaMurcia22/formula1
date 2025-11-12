@@ -1,7 +1,8 @@
 package com.patrones.service.dao;
 
+import com.patrones.Interface.DAO.ICircuitoDAO;
+import com.patrones.Interface.DAO.IConectionProvider;
 import com.patrones.entity.Circuito;
-import com.patrones.service.ConnectionBD;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,9 +11,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CircuitoDAO {
+public class CircuitoDAO implements ICircuitoDAO {
+
+    private final IConectionProvider conexionBD;
+
+    public CircuitoDAO(IConectionProvider connectionProvider) {
+        this.conexionBD = connectionProvider;
+    }
 
     // Obtiene la lista de circuitos correspondientes a una temporada específica
+    @Override
     public List<Circuito> obtenerCircuitosPorTemporada(int anio) {
         List<Circuito> circuitos = new ArrayList<>();
 
@@ -29,7 +37,7 @@ public class CircuitoDAO {
         ORDER BY ca.fecha;
         """;
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             // Se pasa el año de la temporada como parámetro
@@ -55,6 +63,7 @@ public class CircuitoDAO {
     }
 
     // Obtiene la información detallada de un circuito específico en una temporada
+    @Override
     public Circuito obtenerCircuito(int idCircuito, int anio) {
         Circuito circuito = null;
 
@@ -76,7 +85,7 @@ public class CircuitoDAO {
         ORDER BY ca.fecha;
         """;
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             // Se establecen los parámetros del circuito y la temporada

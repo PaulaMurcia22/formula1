@@ -1,14 +1,16 @@
 package com.patrones.service.dao;
 
+import com.patrones.Interface.DAO.IConectionProvider;
 import com.patrones.entity.Carrera;
+import com.patrones.service.ConnectionBD;
 import org.junit.Test;
 import java.util.List;
 import static org.junit.Assert.*;
 
 
 public class CarreraTest {
-
-    private final CarreraDAO carreraDAO = new CarreraDAO();
+    private final IConectionProvider conexionBD = new ConnectionBD();
+    private final CarreraDAO carreraDAO = new CarreraDAO(conexionBD);
 
 
     @Test // Validar que se obtenga la lista de carreras desde la base de datos

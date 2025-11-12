@@ -1,19 +1,22 @@
 package com.patrones.service;
 
+import com.patrones.Interface.DAO.IConectionProvider;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class ConnectionBD {
+public class ConnectionBD implements IConectionProvider {
 
 
     // Variable estática para guardar la conexión a la base de datos
-    private static Connection connection;
+    private Connection connection;
 
     // Metodo que devuelve la conexión activa a la base de datos
-    public static Connection getConnection() {
+    @Override
+    public  Connection getConnection() {
         try {
             // Si no hay conexión o está cerrada, se crea una nueva
             if (connection == null || connection.isClosed()) {

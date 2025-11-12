@@ -29,8 +29,8 @@ public class Carrera {
 
 
     //devuelve la visualización de la información de la carrera para la lista
-    @Override
-    public String toString() {
+
+    public String ToString() {
         return String.format("%d - %s | Fecha: %s | Circuito: %s",
                 id, nombreGp, fecha, circuito);
     }

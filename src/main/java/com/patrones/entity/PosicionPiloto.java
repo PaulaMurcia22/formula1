@@ -1,6 +1,6 @@
 package com.patrones.entity;
 
-public class PosicionPiloto {
+public class PosicionPiloto{
     //atributos de PosicionPiloto
     private int idPiloto;
     private String nombre;
@@ -40,8 +40,7 @@ public class PosicionPiloto {
     }
 
     //devuelve la visualización de la información de PosicionPiloto para la lista
-    @Override
-    public String toString() {
+    public String toString(){
         return String.format(
                 "%s | %s %s | Equipo: %s | Puntos: %d",
                 categoriaPosicion, nombre, apellido, nombreEquipo, puntosTotales

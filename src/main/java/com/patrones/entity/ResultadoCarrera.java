@@ -53,8 +53,7 @@ public class ResultadoCarrera {
     }
 
     //devuelve la visualización de la información de ResultadoCarrera para la lista
-    @Override
-    public String toString() {
+    public String toString(){
         return String.format(
                 "CarreraID: %d, PilotoTemporadaID: %d, Estado: %s, Posición: %d, Puntos: %d",
                 id_carrera, id_piloto_temporada, estado, posicion_final, puntosObtenidos

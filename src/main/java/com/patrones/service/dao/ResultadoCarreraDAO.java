@@ -1,5 +1,7 @@
 package com.patrones.service.dao;
 
+import com.patrones.Interface.DAO.IConectionProvider;
+import com.patrones.Interface.DAO.IResultadoCarreraDAO;
 import com.patrones.entity.ResultadoCarrera;
 import com.patrones.service.ConnectionBD;
 
@@ -8,8 +10,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class ResultadoCarreraDAO {
+public class ResultadoCarreraDAO implements IResultadoCarreraDAO {
+    private  final IConectionProvider conexionBD;
+
+    public ResultadoCarreraDAO (IConectionProvider conexionBD) {
+        this.conexionBD = conexionBD;
+    }
+
     // Metodo para insertar un nuevo resultado de carrera en la base de datos
+    @Override
     public void InsertarResultadosCarrera(ResultadoCarrera resultadoCarrera) {
         // Consulta SQL para insertar los datos en la tabla resultado_carrera
         String sql = """
@@ -18,7 +27,7 @@ public class ResultadoCarreraDAO {
         """;
 
         // Se usa try-with-resources para cerrar automáticamente la conexión y el PreparedStatement
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             // Asigna los valores del objeto resultadoCarrera a los parámetros del SQL
@@ -39,10 +48,11 @@ public class ResultadoCarreraDAO {
     }
 
     // Metodo para verificar si ya existe un resultado para un piloto en una carrera
+    @Override
     public boolean existeResultado(int idPilotoTemporada, int idCarrera) {
         String sql = "SELECT COUNT(*) FROM resultado_carrera WHERE id_piloto_temporada = ? AND id_carrera = ?";
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             // Asigna los valores a los parámetros del SQL

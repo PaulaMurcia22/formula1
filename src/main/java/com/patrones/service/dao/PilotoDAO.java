@@ -1,14 +1,21 @@
 package com.patrones.service.dao;
 
+import com.patrones.Interface.DAO.IPilotoDAO;
+import com.patrones.Interface.DAO.IConectionProvider;
 import com.patrones.entity.Piloto;
-import com.patrones.service.ConnectionBD;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PilotoDAO {
+public class PilotoDAO implements IPilotoDAO {
+    private final IConectionProvider conexionBD;
 
+    public PilotoDAO(IConectionProvider conexionBD) {
+        this.conexionBD = conexionBD;
+    }
+
+    @Override
     public List<Piloto> obtenerPilotosPorTemporada(int anio) {
         List<Piloto> pilotos = new ArrayList<>();
 
@@ -26,7 +33,7 @@ public class PilotoDAO {
             ORDER BY p.id_piloto ASC;
         """;
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, anio);
@@ -49,6 +56,7 @@ public class PilotoDAO {
         return pilotos;
     }
 
+    @Override
     public Piloto obtenerPiloto(int idPiloto, int anio) {
         Piloto piloto = null;
 
@@ -71,7 +79,7 @@ public class PilotoDAO {
         AND t.anio = ?;
     """;
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, idPiloto);
@@ -98,6 +106,8 @@ public class PilotoDAO {
 
         return piloto;
     }
+
+    @Override
     public Piloto obtenerPilotoPorNombre(String nombrePiloto, int anio) {
         Piloto piloto = null; // Variable donde se guardará el piloto encontrado
 
@@ -119,7 +129,7 @@ public class PilotoDAO {
         AND t.anio = ?;
     """;
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             // Se asignan los parámetros de búsqueda

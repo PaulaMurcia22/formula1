@@ -1,5 +1,7 @@
 package com.patrones.service.dao;
 
+import com.patrones.Interface.DAO.IConectionProvider;
+import com.patrones.Interface.DAO.IPilotoTemporadaDAO;
 import com.patrones.entity.PilotoTemporada;
 import com.patrones.service.ConnectionBD;
 
@@ -7,9 +9,16 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PilotoTemporadaDAO {
+public class PilotoTemporadaDAO implements IPilotoTemporadaDAO {
+
+    private final IConectionProvider conexionBD;
+
+    public PilotoTemporadaDAO(IConectionProvider conexionBD) {
+        this.conexionBD = conexionBD;
+    }
 
     // Obtiene el id_piloto_temporada a partir del nombre del piloto y el año
+    @Override
     public int obtenerIdPilotoTemporadaPorNombre(String nombrePiloto, int anio) {
         int idPilotoTemporada = -1;
 
@@ -22,7 +31,7 @@ public class PilotoTemporadaDAO {
         AND t.anio = ?;
     """;
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             // Se asignan los parámetros de búsqueda
@@ -44,6 +53,7 @@ public class PilotoTemporadaDAO {
     }
 
     // Actualiza los puntos totales sumando los nuevos puntos
+    @Override
     public void actualizarPuntosTotales(int idPilotoTemporada, int puntosNuevos) {
         String sql = """
         UPDATE piloto_temporada
@@ -51,7 +61,7 @@ public class PilotoTemporadaDAO {
         WHERE id_piloto_temporada = ?;
     """;
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, puntosNuevos);
@@ -72,10 +82,11 @@ public class PilotoTemporadaDAO {
     }
 
     // Incrementa en 1 la cantidad de victorias del piloto
+    @Override
     public void incrementarVictorias(int idPiloto) {
         String sql = "UPDATE piloto_temporada SET victorias = victorias + 1 WHERE id_piloto = ?";
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, idPiloto);
@@ -87,6 +98,7 @@ public class PilotoTemporadaDAO {
     }
 
     // Obtiene el id_piloto a partir del id_piloto_temporada
+    @Override
     public int obtenerIdPilotoPorIdPilotoTemporada(int idPilotoTemporada) {
         int idPiloto = -1;
 
@@ -96,7 +108,7 @@ public class PilotoTemporadaDAO {
         WHERE id_piloto_temporada = ?;
     """;
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, idPilotoTemporada);
