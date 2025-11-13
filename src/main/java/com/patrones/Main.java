@@ -1,5 +1,4 @@
 package com.patrones;
-import com.patrones.entity.*;
 import com.patrones.service.ConnectionBD;
 import com.patrones.service.dao.*;
 import com.patrones.service.*;
@@ -23,17 +22,18 @@ public class Main {
             IResultadoCarreraDAO resultadoCarreraDAO = new ResultadoCarreraDAO(conexionBD);
             Ipuntacion puntuacionService = new PuntuacionService();
 
-            // Crear el servicio de temporada con todas las dependencias
-            ItemporadaService temporadaService = new TemporadaService(
-                    pilotoDAO,
-                    equipoDAO,
-                    circuitoDAO,
-                    posicionPilotoDAO,
-                    posicionEquipoDAO,
-                    pilotoTemporadaDAO,
-                    carreraDAO,
-                    resultadoCarreraDAO,
-                    puntuacionService
+            IPilotosService pilotosService = new PilotosService(pilotoDAO,posicionPilotoDAO);
+            ICircuitosService circuitosService = new CircuitosService(circuitoDAO);
+            ICarreraService carreraService = new CarrerasService(carreraDAO,puntuacionService,pilotoDAO,posicionPilotoDAO,resultadoCarreraDAO,pilotoTemporadaDAO);
+            IEquiposService equiposService = new EquiposService(equipoDAO,posicionEquipoDAO);
+            ISimulacionService simulacionService = new SimulacionService(carreraDAO, resultadoCarreraDAO, pilotoDAO, puntuacionService, pilotoTemporadaDAO);
+
+            ITemporadaService temporadaService = new TemporadaService(
+                    pilotosService,
+                    carreraService,
+                    circuitosService,
+                    simulacionService,
+                    equiposService
             );
 
             // ✅ Inyectar la dependencia al menú

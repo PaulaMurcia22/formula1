@@ -30,7 +30,7 @@ public class Carrera {
 
     //devuelve la visualización de la información de la carrera para la lista
 
-    public String ToString() {
+    public String toString() {
         return String.format("%d - %s | Fecha: %s | Circuito: %s",
                 id, nombreGp, fecha, circuito);
     }

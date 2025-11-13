@@ -1,16 +1,16 @@
 package com.patrones.service;
 
 import com.patrones.Interface.IMenuService;
-import com.patrones.Interface.ItemporadaService;
+import com.patrones.Interface.ITemporadaService;
 import com.patrones.utils.Consola;
 
 public class MenuService implements IMenuService {
 
 
-    private final ItemporadaService temporadaService;
+    private final ITemporadaService temporadaService;
 
     // ✅ Constructor que recibe la dependencia
-    public MenuService(ItemporadaService temporadaService) {
+    public MenuService(ITemporadaService temporadaService) {
         this.temporadaService = temporadaService;
     }
 
