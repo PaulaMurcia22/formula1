@@ -152,10 +152,10 @@ public class CarrerasService implements ICarreraService {
             }
 
             // Guardar si quedó entre los 3 primeros
-            if (posicion <= 3) {
                 resultadoCarreraDAO.InsertarResultadosCarrera(resultado);
-                if (posicion == 1) pilotoTemporadaDAO.incrementarVictorias(idTemp);
-            }
+
+            if (posicion == 1) pilotoTemporadaDAO.incrementarVictorias(idTemp);
+
 
             pilotoTemporadaDAO.actualizarPuntosTotales(idTemp, puntosGanados);
             listaResultados.add(resultado);
