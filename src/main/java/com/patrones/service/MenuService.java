@@ -22,11 +22,15 @@ public class MenuService implements IMenuService {
         // Ciclo infinito para que el menú se repita hasta que el usuario decida salir
         while (true) {
             // Muestra el encabezado del menú
-            System.out.println("¡BIENVENIDO A LA APP DE F1 \uD83C\uDFC1!");
-            System.out.println("TEMPORADAS DISPONIBLES:");
-            System.out.println("1. Temporada 2024");
-            System.out.println("2. Temporada 2025");
-            System.out.println("3. Salir");
+            System.out.println("*********************************");
+            System.out.println("* ¡BIENVENIDO A LA APP DE F1 \uD83C\uDFC1!*");
+            System.out.println("*********************************");
+            System.out.println("* TEMPORADAS DISPONIBLES        *");
+            System.out.println("* 1. Temporada 2024             *");
+            System.out.println("* 2. Temporada 2025             *");
+            System.out.println("* 3. Salir                      *");
+            System.out.println("*********************************");
+            System.out.println(" ");
 
             // Pide al usuario que elija una opción
             int opcion = Consola.leerEntero("Selecciona una opción: ");

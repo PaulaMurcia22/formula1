@@ -11,6 +11,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *  - SRP: esta clase solo gestiona la persistencia de Circuito.
+ *  - DIP: depende de la abstracción IConectionProvider, no de ConnectionBD directamente.
+ *  - OCP: puede extenderse con nuevos métodos sin modificar los existentes.
+ */
 public class CircuitoDAO implements ICircuitoDAO {
 
     private final IConectionProvider conexionBD;
@@ -25,17 +30,17 @@ public class CircuitoDAO implements ICircuitoDAO {
         List<Circuito> circuitos = new ArrayList<>();
 
         String sql = """
-        SELECT
-            c.id_circuito,
-            c.nombre,
-            c.pais,
-            ca.fecha
-        FROM circuito c
-        JOIN carrera ca ON c.id_circuito = ca.id_circuito
-        JOIN temporada t ON ca.id_temporada = t.id_temporada
-        WHERE t.anio = ?
-        ORDER BY ca.fecha;
-        """;
+            SELECT
+                c.id_circuito,
+                c.nombre,
+                c.pais,
+                ca.fecha
+            FROM circuito c
+            JOIN carrera ca ON c.id_circuito = ca.id_circuito
+            JOIN temporada t ON ca.id_temporada = t.id_temporada
+            WHERE t.anio = ?
+            ORDER BY ca.fecha;
+            """;
 
         try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -44,14 +49,15 @@ public class CircuitoDAO implements ICircuitoDAO {
             stmt.setInt(1, anio);
             ResultSet rs = stmt.executeQuery();
 
-            // Recorre los resultados y crea objetos Circuito
+            // Recorre los resultados y crea objetos Circuito usando Builder
             while (rs.next()) {
-                Circuito circuito = new Circuito(
-                        rs.getInt("id_circuito"),
-                        rs.getString("nombre"),
-                        rs.getString("pais"),
-                        rs.getDate("fecha")
-                );
+                Circuito circuito = new Circuito.Builder()
+                        .id(rs.getInt("id_circuito"))
+                        .nombre(rs.getString("nombre"))
+                        .pais(rs.getString("pais"))
+                        .fecha(rs.getDate("fecha"))
+                        .build();
+
                 circuitos.add(circuito);
             }
 
@@ -68,43 +74,42 @@ public class CircuitoDAO implements ICircuitoDAO {
         Circuito circuito = null;
 
         String sql = """
-        SELECT
-            c.id_circuito,
-            c.nombre,
-            c.pais,
-            c.longitud_km,
-            c.curvas,
-            ca.fecha,
-            ca.nombre_gp,
-            t.anio
-        FROM circuito c
-        JOIN carrera ca ON c.id_circuito = ca.id_circuito
-        JOIN temporada t ON ca.id_temporada = t.id_temporada
-        WHERE c.id_circuito = ?
-        AND t.anio = ?
-        ORDER BY ca.fecha;
-        """;
+            SELECT
+                c.id_circuito,
+                c.nombre,
+                c.pais,
+                c.longitud_km,
+                c.curvas,
+                ca.fecha,
+                ca.nombre_gp,
+                t.anio
+            FROM circuito c
+            JOIN carrera ca ON c.id_circuito = ca.id_circuito
+            JOIN temporada t ON ca.id_temporada = t.id_temporada
+            WHERE c.id_circuito = ?
+            AND t.anio = ?
+            ORDER BY ca.fecha;
+            """;
 
         try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            // Se establecen los parámetros del circuito y la temporada
             stmt.setInt(1, idCircuito);
             stmt.setInt(2, anio);
             ResultSet rs = stmt.executeQuery();
 
-            // Si se encuentra, se crea el objeto Circuito con los datos obtenidos
+            // Crea el Circuito usando el Builder
             if (rs.next()) {
-                circuito = new Circuito(
-                        rs.getInt("id_circuito"),
-                        rs.getString("nombre"),
-                        rs.getString("pais"),
-                        rs.getString("longitud_km"),
-                        rs.getString("curvas"),
-                        rs.getDate("fecha"),
-                        rs.getString("nombre_gp"),
-                        rs.getInt("anio")
-                );
+                circuito = new Circuito.Builder()
+                        .id(rs.getInt("id_circuito"))
+                        .nombre(rs.getString("nombre"))
+                        .pais(rs.getString("pais"))
+                        .longitudKm(rs.getString("longitud_km"))
+                        .curvas(rs.getString("curvas"))
+                        .fecha(rs.getDate("fecha"))
+                        .nombreGp(rs.getString("nombre_gp"))
+                        .anio(rs.getInt("anio"))
+                        .build();
             }
 
         } catch (SQLException e) {

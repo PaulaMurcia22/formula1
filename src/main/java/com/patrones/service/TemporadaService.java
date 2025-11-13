@@ -47,7 +47,10 @@ public class TemporadaService implements ItemporadaService {
     // Muestra todos los pilotos y permite ver detalles de uno
     @Override
     public void mostrarPilotos(int anio) {
-        System.out.println("\nLISTADO DE PILOTOS - TEMPORADA " + anio);
+        System.out.println(" ");
+        System.out.print("***************************************");
+        System.out.println("\n* LISTADO DE PILOTOS - TEMPORADA " + anio + " *");
+        System.out.print("***************************************\n");
         List<Piloto> pilotos = pilotoDAO.obtenerPilotosPorTemporada(anio);
 
         if (pilotos.isEmpty()) {
@@ -63,12 +66,15 @@ public class TemporadaService implements ItemporadaService {
 
             Piloto pilotoSeleccionado = pilotoDAO.obtenerPiloto(idSeleccionado, anio);
             if (pilotoSeleccionado != null) {
-                System.out.println("\n--- DETALLES DEL PILOTO ---");
-                System.out.println("Nombre: " + pilotoSeleccionado.getNombre() + " " + pilotoSeleccionado.getApellido());
-                System.out.println("Equipo: " + pilotoSeleccionado.getEquipo());
-                System.out.println("Número: " + pilotoSeleccionado.getNumero());
-                System.out.println("Puntos: " + pilotoSeleccionado.getPuntosTotales());
-                System.out.println("Victorias: " + pilotoSeleccionado.getVictorias());
+
+                System.out.println("***************************************");
+                System.out.println("*         DETALLES DEL PILOTO         *");
+                System.out.println("***************************************");
+                System.out.println("* Nombre: " + pilotoSeleccionado.getNombre() + " " + pilotoSeleccionado.getApellido());
+                System.out.println("* Equipo: " + pilotoSeleccionado.getEquipo());
+                System.out.println("* Número: " + pilotoSeleccionado.getNumero());
+                System.out.println("* Puntos: " + pilotoSeleccionado.getPuntosTotales());
+                System.out.println("* Victorias: " + pilotoSeleccionado.getVictorias());
             } else {
                 System.out.println("No se encontró un piloto con ese Id.");
             }
