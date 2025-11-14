@@ -227,31 +227,64 @@ public class TemporadaService implements ItemporadaService {
         // Se piden los resultados de 20 pilotos
         for (int i = 1; i <= 20; i++) {
             System.out.println("\nPiloto #" + i);
-            System.out.print("Digite el nombre del piloto: ");
-            String nombre = sc.nextLine().trim();
 
-            // Busca el piloto en la BD
-            pilotoDAO.obtenerPilotoPorNombre(nombre, 2025);
-
-            System.out.print("Ingrese la posición final: ");
-            int posicion = sc.nextInt();
-            sc.nextLine(); // limpiar buffer
-
-            // Verifica que la posición no esté repetida
-            boolean ocupada = listaResultados.stream().anyMatch(r -> r.getPosicion_final() == posicion);
-            if (ocupada) {
-                System.out.println("Esa posición ya fue asignada. Intenta de nuevo.");
-                i--;
-                continue;
+            // --- VALIDAR NOMBRE ---
+            String nombre = "";
+            while (true) {
+                System.out.print("Digite el nombre del piloto: ");
+                nombre = sc.nextLine().trim();
+                if (nombre.isEmpty()) {
+                    System.out.println("El nombre no puede estar vacío. Intenta de nuevo.");
+                } else {
+                    // Opcional: verifica si existe en la BD
+                    if (pilotoDAO.obtenerPilotoPorNombre(nombre, 2025) == null) {
+                        System.out.println("Piloto no encontrado en la temporada 2025. Intenta de nuevo.");
+                    } else {
+                        break;
+                    }
+                }
             }
 
-            System.out.print("Estado (terminado/descalificado): ");
-            String estado = sc.nextLine().trim();
+            // --- VALIDAR POSICIÓN FINAL ---
+            int posicion =-1;
+            while (true) {
+                System.out.print("Ingrese la posición final: ");
+                String input = sc.nextLine().trim();
 
+                try {
+                    posicion = Integer.parseInt(input);
+                    if (posicion < 1 || posicion > 20) {
+                        System.out.println("La posición debe estar entre 1 y 20.");
+                        continue;
+                    }
+                    final int posTemp = posicion;
+                    boolean ocupada = listaResultados.stream().anyMatch(r -> r.getPosicion_final() == posTemp);
+                    if (ocupada) {
+                        System.out.println("Esa posición ya fue asignada. Intenta de nuevo.");
+                    } else {
+                        break; // posición válida y libre
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Entrada inválida. Debe ser un número entero.");
+                }
+            }
+
+            // --- VALIDAR ESTADO ---
+            String estado = "";
+            while (true) {
+                System.out.print("Estado (terminado/descalificado): ");
+                estado = sc.nextLine().trim();
+                if (estado.equalsIgnoreCase("terminado") || estado.equalsIgnoreCase("descalificado")) {
+                    break; // estado válido
+                } else {
+                    System.out.println("Estado inválido. Solo se permite 'terminado' o 'descalificado'.");
+                }
+            }
+
+            // --- PROCESAR RESULTADO ---
             int idTemp = pilotoTemporadaDAO.obtenerIdPilotoTemporadaPorNombre(nombre, 2025);
             int puntosGanados = puntos.getOrDefault(posicion, 0);
 
-            // Crea y guarda el resultado
             ResultadoCarrera resultado = new ResultadoCarrera();
             resultado.setId_carrera(carrera.getId());
             resultado.setId_piloto_temporada(idTemp);
@@ -261,15 +294,20 @@ public class TemporadaService implements ItemporadaService {
 
             if (resultadoCarreraDAO.existeResultado(idTemp, carrera.getId())) {
                 System.out.println("Ese piloto ya tiene resultado en esta carrera.");
+                i--; // permite reingresar
                 continue;
             }
-                resultadoCarreraDAO.InsertarResultadosCarrera(resultado);
-                if (posicion == 1) pilotoTemporadaDAO.incrementarVictorias(idTemp);
+
+            // Guardar si quedó entre los 3 primeros
+            resultadoCarreraDAO.InsertarResultadosCarrera(resultado);
+
+            if (posicion == 1) pilotoTemporadaDAO.incrementarVictorias(idTemp);
 
 
             pilotoTemporadaDAO.actualizarPuntosTotales(idTemp, puntosGanados);
             listaResultados.add(resultado);
         }
+
 
         // Muestra los resultados ingresados
         for (ResultadoCarrera r : listaResultados) {
