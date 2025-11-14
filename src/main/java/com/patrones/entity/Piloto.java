@@ -44,6 +44,83 @@ public class Piloto {
         this.equipo = equipo;
     }
 
+    //Constructor privado para Builder
+
+    private Piloto(Builder builder) {
+        this.id = builder.id;
+        this.nombre = builder.nombre;
+        this.apellido = builder.apellido;
+        this.nacionalidad = builder.nacionalidad;
+        this.equipo = builder.equipo;
+        this.numero = builder.numero;
+        this.anio = builder.anio;
+        this.puntosTotales = builder.puntosTotales;
+        this.victorias = builder.victorias;
+    }
+
+    //Builder
+    public static class Builder {
+        private int id;
+        private String nombre;
+        private String apellido;
+        private String nacionalidad;
+        private String equipo;
+        private int numero;
+        private int anio;
+        private int puntosTotales;
+        private int victorias;
+        public Builder id(int id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder nombre(String nombre) {
+            this.nombre = nombre;
+            return this;
+
+        }
+
+        public Builder apellido(String apellido) {
+            this.apellido = apellido;
+            return this;
+        }
+
+        public Builder nacionalidad(String nacionalidad) {
+            this.nacionalidad = nacionalidad;
+            return this;
+        }
+
+        public Builder equipo(String equipo) {
+            this.equipo = equipo;
+            return this;
+        }
+
+        public Builder numero(int numero) {
+            this.numero = numero;
+            return this;
+        }
+
+        public Builder anio(int anio) {
+            this.anio = anio;
+            return this;
+        }
+
+        public Builder puntosTotales(int puntosTotales) {
+            this.puntosTotales = puntosTotales;
+            return this;
+        }
+
+        public Builder victorias(int victorias) {
+            this.victorias = victorias;
+            return this;
+        }
+
+        //instancia de Piloto
+        public Piloto build() {
+            return new Piloto(this);
+        }
+    }
+
     //getters
     public int getId() { return id; }
     public String getNombre() { return nombre; }
@@ -57,7 +134,8 @@ public class Piloto {
 
 
     //devuelve la visualización de la información del piloto para la lista
-    public String toString(){
+    @Override
+    public String toString() {
         return String.format("%d - %s %s | Equipo: %s",
                 id, nombre, apellido, equipo);
     }
