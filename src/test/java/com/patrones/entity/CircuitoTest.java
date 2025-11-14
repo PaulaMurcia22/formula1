@@ -1,6 +1,5 @@
 package com.patrones.entity;
 
-import com.patrones.entity.Circuito;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import java.text.SimpleDateFormat;
@@ -20,16 +19,18 @@ public class CircuitoTest {
     @Test
     public void testCrearCircuitoBahrain() {
         Date fecha = convertirFecha("2024-03-02");
-        Circuito circuito = new Circuito(
-                1,
-                "Circuito de Bahréin",
-                "Bahréin",
-                "5.412",
-                "15",
-                fecha,
-                "Gran Premio de Bahréin 2024",
-                2024
-        );
+
+        // 🔹 Ahora usamos el patrón Builder
+        Circuito circuito = new Circuito.Builder()
+                .id(1)
+                .nombre("Circuito de Bahréin")
+                .pais("Bahréin")
+                .longitudKm("5.412")
+                .curvas("15")
+                .fecha(fecha)
+                .nombreGp("Gran Premio de Bahréin 2024")
+                .anio(2024)
+                .build();
 
         assertEquals(1, circuito.getId());
         assertEquals("Circuito de Bahréin", circuito.getNombre());
@@ -44,16 +45,17 @@ public class CircuitoTest {
     @Test
     public void testCrearCircuitoMexico() {
         Date fecha = convertirFecha("2024-10-27");
-        Circuito circuito = new Circuito(
-                20,
-                "Autódromo Hermanos Rodríguez",
-                "México",
-                "4.421",
-                "16",
-                fecha,
-                "Gran Premio de México 2024",
-                2024
-        );
+
+        Circuito circuito = new Circuito.Builder()
+                .id(20)
+                .nombre("Autódromo Hermanos Rodríguez")
+                .pais("México")
+                .longitudKm("4.421")
+                .curvas("16")
+                .fecha(fecha)
+                .nombreGp("Gran Premio de México 2024")
+                .anio(2024)
+                .build();
 
         assertEquals(20, circuito.getId());
         assertEquals("Autódromo Hermanos Rodríguez", circuito.getNombre());
@@ -66,7 +68,14 @@ public class CircuitoTest {
     @Test
     public void testCrearCircuitoSimple() {
         Date fecha = convertirFecha("2024-06-23");
-        Circuito circuito = new Circuito(10, "Circuit de Barcelona-Catalunya", "España", fecha);
+
+        // 🔹 Versión básica usando solo campos mínimos
+        Circuito circuito = new Circuito.Builder()
+                .id(10)
+                .nombre("Circuit de Barcelona-Catalunya")
+                .pais("España")
+                .fecha(fecha)
+                .build();
 
         assertEquals(10, circuito.getId());
         assertEquals("Circuit de Barcelona-Catalunya", circuito.getNombre());
@@ -77,7 +86,13 @@ public class CircuitoTest {
     @Test
     public void testToString() {
         Date fecha = convertirFecha("2024-07-07");
-        Circuito circuito = new Circuito(12, "Silverstone", "Reino Unido", fecha);
+
+        Circuito circuito = new Circuito.Builder()
+                .id(12)
+                .nombre("Silverstone")
+                .pais("Reino Unido")
+                .fecha(fecha)
+                .build();
 
         String texto = circuito.toString();
         assertTrue(texto.contains("Silverstone"));

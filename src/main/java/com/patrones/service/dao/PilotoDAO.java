@@ -1,14 +1,54 @@
 package com.patrones.service.dao;
 
+import com.patrones.Interface.DAO.IPilotoDAO;
+import com.patrones.Interface.DAO.IConectionProvider;
 import com.patrones.entity.Piloto;
-import com.patrones.service.ConnectionBD;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PilotoDAO {
+public class PilotoDAO implements IPilotoDAO {
+    private final IConectionProvider conexionBD;
 
+    public PilotoDAO(IConectionProvider conexionBD) {
+        this.conexionBD = conexionBD;
+    }
+
+    //FACTORY METHODS
+    // Factory Method para pilotos de lista (versión básica)
+    protected Piloto crearPilotoLista(int id, String nombre, String apellido, String equipo) {
+        return new Piloto(id, nombre, apellido, equipo);
+    }
+
+    // Factory Method para piloto detalle (versión completa)
+    protected Piloto crearPilotoDetalle(
+            int id, String nombre, String apellido,
+            String nacionalidad, String equipo,
+            int numero, int anio, int puntos, int victorias
+    ) {
+        return new Piloto(
+                id, nombre, apellido,
+                nacionalidad, equipo,
+                numero, anio, puntos, victorias
+        );
+    }
+
+    // Factory Method para piloto por nombre (sin puntos/victorias)
+    protected Piloto crearPilotoPorNombre(
+            int id, String nombre, String apellido,
+            String nacionalidad, String equipo,
+            int numero, int anio
+    ) {
+        return new Piloto(
+                id, nombre, apellido,
+                nacionalidad, equipo,
+                numero, anio
+        );
+    }
+
+    //MÉTODOS DEL DAO
+    @Override
     public List<Piloto> obtenerPilotosPorTemporada(int anio) {
         List<Piloto> pilotos = new ArrayList<>();
 
@@ -26,14 +66,15 @@ public class PilotoDAO {
             ORDER BY p.id_piloto ASC;
         """;
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, anio);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Piloto piloto = new Piloto(
+                // Aplicación de Factory Method
+                Piloto piloto = crearPilotoLista(
                         rs.getInt("id_piloto"),
                         rs.getString("nombre"),
                         rs.getString("apellido"),
@@ -43,12 +84,13 @@ public class PilotoDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("Ocurrio un error al obtener los pilotos: " + e.getMessage());
+            System.err.println("Ocurrió un error al obtener los pilotos: " + e.getMessage());
         }
 
         return pilotos;
     }
 
+    @Override
     public Piloto obtenerPiloto(int idPiloto, int anio) {
         Piloto piloto = null;
 
@@ -69,9 +111,9 @@ public class PilotoDAO {
         JOIN temporada t ON pt.id_temporada = t.id_temporada
         WHERE p.id_piloto = ?
         AND t.anio = ?;
-    """;
+        """;
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, idPiloto);
@@ -79,7 +121,7 @@ public class PilotoDAO {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                piloto = new Piloto(
+                piloto = crearPilotoDetalle(
                         rs.getInt("id_piloto"),
                         rs.getString("nombre"),
                         rs.getString("apellido"),
@@ -93,15 +135,16 @@ public class PilotoDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("Ocurrio un error al obtener el piloto por ID: " + e.getMessage());
+            System.err.println("Ocurrió un error al obtener el piloto por ID: " + e.getMessage());
         }
 
         return piloto;
     }
-    public Piloto obtenerPilotoPorNombre(String nombrePiloto, int anio) {
-        Piloto piloto = null; // Variable donde se guardará el piloto encontrado
 
-        // Consulta SQL para obtener los datos del piloto según su nombre y año de temporada
+    @Override
+    public Piloto obtenerPilotoPorNombre(String nombrePiloto, int anio) {
+        Piloto piloto = null;
+
         String sql = """
         SELECT
             p.id_piloto,
@@ -117,21 +160,18 @@ public class PilotoDAO {
         JOIN temporada t ON pt.id_temporada = t.id_temporada
         WHERE LOWER(p.nombre) = LOWER(?)
         AND t.anio = ?;
-    """;
+        """;
 
-        try (Connection conn = ConnectionBD.getConnection();
+        try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            // Se asignan los parámetros de búsqueda
             stmt.setString(1, nombrePiloto);
             stmt.setInt(2, anio);
 
-            // Ejecuta la consulta
             ResultSet rs = stmt.executeQuery();
 
-            // Si el piloto existe, se crea el objeto con sus datos
             if (rs.next()) {
-                piloto = new Piloto(
+                piloto = crearPilotoPorNombre(
                         rs.getInt("id_piloto"),
                         rs.getString("nombre"),
                         rs.getString("apellido"),
@@ -143,14 +183,8 @@ public class PilotoDAO {
             }
 
         } catch (SQLException e) {
-            // Si ocurre un error en la conexión o consulta, se muestra el mensaje
-            System.err.println("Ocurrió un error al obtener el piloto por nombre: " + e.getMessage());
+            System.err.println("Ocurrió un error al obtener piloto por nombre: " + e.getMessage());
         }
-
-        // Retorna el piloto encontrado o null si no existe
         return piloto;
     }
-
-
-
 }
