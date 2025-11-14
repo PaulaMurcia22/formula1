@@ -2,7 +2,7 @@
 -- PILOTO_Temporada 2025
 -- =====================
 INSERT INTO piloto_temporada (id_piloto, id_equipo, id_temporada, puntos_totales, victorias, posicion_final) VALUES
-(4, 2, 2, 324, 5, 1),    -- Oscar Piastri - McLaren
+(4, 2, 2, 324, 7, 1),    -- Oscar Piastri - McLaren
 (2, 2, 2, 293, 2, 2),    -- Lando Norris - McLaren
 (1, 1, 2, 230, 3, 3),    -- Max Verstappen - Red Bull
 (6, 4, 2, 194, 1, 4),    -- George Russell - Mercedes

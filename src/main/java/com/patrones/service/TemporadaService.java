@@ -263,12 +263,9 @@ public class TemporadaService implements ItemporadaService {
                 System.out.println("Ese piloto ya tiene resultado en esta carrera.");
                 continue;
             }
-
-            // Si quedó entre los 3 primeros, se guarda y se cuentan victorias
-            if (posicion <= 3) {
                 resultadoCarreraDAO.InsertarResultadosCarrera(resultado);
                 if (posicion == 1) pilotoTemporadaDAO.incrementarVictorias(idTemp);
-            }
+
 
             pilotoTemporadaDAO.actualizarPuntosTotales(idTemp, puntosGanados);
             listaResultados.add(resultado);
