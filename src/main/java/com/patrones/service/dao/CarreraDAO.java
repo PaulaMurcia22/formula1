@@ -120,6 +120,13 @@ public class CarreraDAO implements ICarreraDAO {
                     WHEN 1 THEN 25
                     WHEN 2 THEN 18
                     WHEN 3 THEN 15
+                    WHEN 4 THEN 12
+                    WHEN 5 THEN 10
+                    WHEN 6 THEN 8
+                    WHEN 7 THEN 6
+                    WHEN 8 THEN 4
+                    WHEN 9 THEN 2
+                    WHEN 10 THEN 1
                     ELSE 0
                 END AS puntos_obtenidos
             FROM resultado_carrera rc
@@ -150,7 +157,8 @@ public class CarreraDAO implements ICarreraDAO {
                     case 1 -> emoji = "\uD83E\uDD47"; // 🥇
                     case 2 -> emoji = "\uD83E\uDD48"; // 🥈
                     case 3 -> emoji = "\uD83E\uDD49"; // 🥉
-                    default -> emoji = "\uD83D\uDD1D"; // 🔝
+                    case 4, 5, 6, 7, 8, 9, 10 -> emoji = "\uD83D\uDD1D"; // 🔝
+                    default -> emoji = "\uD83D\uDD3B"; // 🔻
                 }
 
                 System.out.printf("%s %s %s | Equipo: %s | Puntos: %d%n",
