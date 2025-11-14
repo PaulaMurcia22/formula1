@@ -9,12 +9,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CarreraDAO implements ICarreraDAO {
+
     private final IConectionProvider conexionBD;
 
     public CarreraDAO(IConectionProvider connectionProvider) {
         this.conexionBD = connectionProvider;
     }
-    // Obtiene la lista de carreras de una temporada específica
+
+    //FACTORY METHOD
+    protected Carrera crearCarrera(
+            int id,
+            String nombreGp,
+            String fecha,
+            String circuito,
+            int numVueltas,
+            int anio
+    ) {
+        return new Carrera(id, nombreGp, fecha, circuito, numVueltas, anio);
+    }
+
+    //MÉTODOS DEL DAO
     @Override
     public List<Carrera> obtenerCarrerasPorTemporada(int anio) {
         List<Carrera> carreras = new ArrayList<>();
@@ -37,13 +51,11 @@ public class CarreraDAO implements ICarreraDAO {
         try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            // Se pasa el año como parámetro
             stmt.setInt(1, anio);
             ResultSet rs = stmt.executeQuery();
 
-            // Recorre los resultados y crea objetos Carrera
             while (rs.next()) {
-                Carrera carrera = new Carrera(
+                Carrera carrera = crearCarrera(
                         rs.getInt("id_carrera"),
                         rs.getString("nombre_gp"),
                         rs.getString("fecha"),
@@ -61,7 +73,6 @@ public class CarreraDAO implements ICarreraDAO {
         return carreras;
     }
 
-    // Obtiene una carrera específica por su ID y año
     @Override
     public Carrera obtenerCarrera(int idCarrera, int anio) {
         Carrera carrera = null;
@@ -83,14 +94,12 @@ public class CarreraDAO implements ICarreraDAO {
         try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            // Se establecen los parámetros de búsqueda
             stmt.setInt(1, idCarrera);
             stmt.setInt(2, anio);
             ResultSet rs = stmt.executeQuery();
 
-            // Si se encuentra, se crea el objeto Carrera
             if (rs.next()) {
-                carrera = new Carrera(
+                carrera = crearCarrera(
                         rs.getInt("id_carrera"),
                         rs.getString("nombre_gp"),
                         rs.getString("fecha"),
@@ -107,11 +116,10 @@ public class CarreraDAO implements ICarreraDAO {
         return carrera;
     }
 
-    // Muestra los resultados de una carrera con nombre, equipo, posición y puntos
     @Override
     public void mostrarResultadosCarrera(int idCarrera) {
         String sql = """
-            SELECT 
+            SELECT DISTINCT
                 p.nombre,
                 p.apellido,
                 e.nombre AS equipo,
@@ -133,11 +141,9 @@ public class CarreraDAO implements ICarreraDAO {
         try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            // Se pasa el ID de la carrera
             stmt.setInt(1, idCarrera);
             ResultSet rs = stmt.executeQuery();
 
-            // Se muestran los resultados con emojis según la posición
             while (rs.next()) {
                 int posicion = rs.getInt("posicion_final");
                 String nombre = rs.getString("nombre");
@@ -145,13 +151,12 @@ public class CarreraDAO implements ICarreraDAO {
                 String equipo = rs.getString("equipo");
                 int puntos = rs.getInt("puntos_obtenidos");
 
-                String emoji;
-                switch (posicion) {
-                    case 1 -> emoji = "\uD83E\uDD47"; // 🥇
-                    case 2 -> emoji = "\uD83E\uDD48"; // 🥈
-                    case 3 -> emoji = "\uD83E\uDD49"; // 🥉
-                    default -> emoji = "\uD83D\uDD1D"; // 🔝
-                }
+                String emoji = switch (posicion) {
+                    case 1 -> "\uD83E\uDD47"; // 🥇
+                    case 2 -> "\uD83E\uDD48"; // 🥈
+                    case 3 -> "\uD83E\uDD49"; // 🥉
+                    default -> "\uD83D\uDD1D"; // 🔝
+                };
 
                 System.out.printf("%s %s %s | Equipo: %s | Puntos: %d%n",
                         emoji, nombre, apellido, equipo, puntos);
@@ -162,7 +167,6 @@ public class CarreraDAO implements ICarreraDAO {
         }
     }
 
-    // Obtiene una carrera por su nombre y año de temporada
     @Override
     public Carrera obtenerCarreraPorNombre(String nombreGp, int anio) {
         Carrera carrera = null;
@@ -185,15 +189,13 @@ public class CarreraDAO implements ICarreraDAO {
         try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            // Se establecen los parámetros de búsqueda
             stmt.setString(1, nombreGp);
             stmt.setInt(2, anio);
 
             ResultSet rs = stmt.executeQuery();
 
-            // Si existe, se construye el objeto Carrera
             if (rs.next()) {
-                carrera = new Carrera(
+                carrera = crearCarrera(
                         rs.getInt("id_carrera"),
                         rs.getString("nombre_gp"),
                         rs.getString("fecha"),
@@ -228,8 +230,7 @@ public class CarreraDAO implements ICarreraDAO {
         JOIN temporada t ON c.id_temporada = t.id_temporada
         WHERE t.anio = ?
         AND c.id_carrera IN (
-            SELECT DISTINCT 
-                id_carrera
+            SELECT DISTINCT id_carrera
             FROM resultado_carrera
             WHERE estado = 'pendiente'
         )
@@ -244,7 +245,7 @@ public class CarreraDAO implements ICarreraDAO {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Carrera carrera = new Carrera(
+                Carrera carrera = crearCarrera(
                         rs.getInt("id_carrera"),
                         rs.getString("nombre_gp"),
                         rs.getString("fecha"),
@@ -261,6 +262,7 @@ public class CarreraDAO implements ICarreraDAO {
 
         return carreras;
     }
+
     @Override
     public void actualizarEstadoPendienteATerminado(int idCarrera) {
         String sql = """
@@ -274,14 +276,15 @@ public class CarreraDAO implements ICarreraDAO {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, idCarrera);
-            int filasActualizadas = stmt.executeUpdate();
+            int filas = stmt.executeUpdate();
 
-            System.out.println("Se actualizaron " + filasActualizadas + " registros de 'pendiente' a 'terminado' para la carrera con ID: " + idCarrera);
+            System.out.println("Se actualizaron " + filas + " registros.");
 
         } catch (SQLException e) {
-            System.err.println("Error al actualizar estado pendiente a terminado: " + e.getMessage());
+            System.err.println("Error al actualizar estado pendiente: " + e.getMessage());
         }
     }
+
     @Override
     public void eliminarResultadoExistente(int idPilotoTemporada, int idCarrera) {
         String sql = "DELETE FROM resultado_carrera WHERE id_piloto_temporada = ? AND id_carrera = ?";

@@ -70,11 +70,11 @@ public class TemporadaService implements ItemporadaService {
                 System.out.println("***************************************");
                 System.out.println("*         DETALLES DEL PILOTO         *");
                 System.out.println("***************************************");
-                System.out.println("* Nombre: " + pilotoSeleccionado.getNombre() + " " + pilotoSeleccionado.getApellido());
-                System.out.println("* Equipo: " + pilotoSeleccionado.getEquipo());
-                System.out.println("* Número: " + pilotoSeleccionado.getNumero());
-                System.out.println("* Puntos: " + pilotoSeleccionado.getPuntosTotales());
-                System.out.println("* Victorias: " + pilotoSeleccionado.getVictorias());
+                System.out.println(" Nombre: " + pilotoSeleccionado.getNombre() + " " + pilotoSeleccionado.getApellido());
+                System.out.println(" Equipo: " + pilotoSeleccionado.getEquipo());
+                System.out.println(" Número: " + pilotoSeleccionado.getNumero());
+                System.out.println(" Puntos: " + pilotoSeleccionado.getPuntosTotales());
+                System.out.println(" Victorias: " + pilotoSeleccionado.getVictorias());
             } else {
                 System.out.println("No se encontró un piloto con ese Id.");
             }
@@ -100,12 +100,14 @@ public class TemporadaService implements ItemporadaService {
 
             Equipo equipoSeleccionado = equipoDAO.obtenerEquipo(idSeleccionado, anio);
             if (equipoSeleccionado != null) {
-                System.out.println("\n--- DETALLES DEL EQUIPO ---");
-                System.out.println("Nombre: " + equipoSeleccionado.getNombre());
-                System.out.println("País: " + equipoSeleccionado.getPais());
-                System.out.println("Motor: " + equipoSeleccionado.getMotor());
-                System.out.println("Pilotos: " + equipoSeleccionado.getPilotos());
-                System.out.println("Puntos: " + equipoSeleccionado.getPuntosTotales());
+                System.out.println("***************************************");
+                System.out.println("       DETALLES DEL EQUIPO          *");
+                System.out.println("***************************************");
+                System.out.println(" Nombre: " + equipoSeleccionado.getNombre());
+                System.out.println(" País: " + equipoSeleccionado.getPais());
+                System.out.println(" Motor: " + equipoSeleccionado.getMotor());
+                System.out.println(" Pilotos: " + equipoSeleccionado.getPilotos());
+                System.out.println(" Puntos: " + equipoSeleccionado.getPuntosTotales());
             } else {
                 System.out.println("No se encontró un equipo con ese Id.");
             }
