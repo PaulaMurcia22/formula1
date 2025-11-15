@@ -80,11 +80,7 @@ public class Carrera {
     public int getAnio() { return anio; }
 
     //devuelve la visualización de la información de la carrera para la lista
-<<<<<<< HEAD
-
-=======
     @Override
->>>>>>> origin/Wilson_branch
     public String toString() {
         return String.format("%d - %s | Fecha: %s | Circuito: %s",
                 id, nombreGp, fecha, circuito);

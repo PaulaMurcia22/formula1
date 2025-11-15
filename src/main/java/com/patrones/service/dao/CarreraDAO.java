@@ -125,24 +125,31 @@ public class CarreraDAO implements ICarreraDAO {
     @Override
     public void mostrarResultadosCarrera(int idCarrera) {
         String sql = """
-            SELECT DISTINCT
-                p.nombre,
-                p.apellido,
-                e.nombre AS equipo,
-                rc.posicion_final,
-                CASE rc.posicion_final
-                    WHEN 1 THEN 25
-                    WHEN 2 THEN 18
-                    WHEN 3 THEN 15
-                    ELSE 0
-                END AS puntos_obtenidos
-            FROM resultado_carrera rc
-            JOIN piloto_temporada pt ON rc.id_piloto_temporada = pt.id_piloto_temporada
-            JOIN piloto p ON pt.id_piloto = p.id_piloto
-            JOIN equipo e ON pt.id_equipo = e.id_equipo
-            WHERE rc.id_carrera = ?
-            ORDER BY rc.posicion_final ASC;
-        """;
+                    SELECT DISTINCT
+                        p.nombre,
+                        p.apellido,
+                        e.nombre AS equipo,
+                        rc.posicion_final,
+                        CASE rc.posicion_final
+                            WHEN 1 THEN 25
+                            WHEN 2 THEN 18
+                            WHEN 3 THEN 15
+                            WHEN 4 THEN 12
+                            WHEN 5 THEN 10
+                            WHEN 6 THEN 8
+                            WHEN 7 THEN 6
+                            WHEN 8 THEN 4
+                            WHEN 9 THEN 2
+                            WHEN 10 THEN 1
+                            ELSE 0
+                        END AS puntos_obtenidos
+                    FROM resultado_carrera rc
+                    JOIN piloto_temporada pt ON rc.id_piloto_temporada = pt.id_piloto_temporada
+                    JOIN piloto p ON pt.id_piloto = p.id_piloto
+                    JOIN equipo e ON pt.id_equipo = e.id_equipo
+                    WHERE rc.id_carrera = ?
+                    ORDER BY rc.posicion_final ASC;
+                """;
 
         try (Connection conn = conexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -163,7 +170,8 @@ public class CarreraDAO implements ICarreraDAO {
                     case 1 -> "\uD83E\uDD47"; // 🥇
                     case 2 -> "\uD83E\uDD48"; // 🥈
                     case 3 -> "\uD83E\uDD49"; // 🥉
-                    default -> "\uD83D\uDD1D"; // 🔝
+                    case 4, 5, 6, 7, 8, 9, 10 -> "\uD83D\uDD1D"; // 🔝
+                    default -> "\uD83D\uDD3B"; // 🔻
                 };
 
                 System.out.printf("%s %s %s | Equipo: %s | Puntos: %d%n",

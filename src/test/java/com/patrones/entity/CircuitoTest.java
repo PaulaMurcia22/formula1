@@ -20,7 +20,7 @@ public class CircuitoTest {
     public void testCrearCircuitoBahrain() {
         Date fecha = convertirFecha("2024-03-02");
 
-        // 🔹 Ahora usamos el patrón Builder
+        // Ahora usamos el patrón Builder
         Circuito circuito = new Circuito.Builder()
                 .id(1)
                 .nombre("Circuito de Bahréin")
@@ -69,7 +69,7 @@ public class CircuitoTest {
     public void testCrearCircuitoSimple() {
         Date fecha = convertirFecha("2024-06-23");
 
-        // 🔹 Versión básica usando solo campos mínimos
+        //Versión básica usando solo campos mínimos
         Circuito circuito = new Circuito.Builder()
                 .id(10)
                 .nombre("Circuit de Barcelona-Catalunya")
